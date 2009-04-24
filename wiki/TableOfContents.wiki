@@ -1,7 +1,0 @@
-  * [Startseite ↑ Home]
-  * [FAQ FAQ]
-  * [Howto Howto]
-  * [Konzept Konzept]
-  * [Hardware Hardware]
-  * [PAM PAM-Modul]
-  * [Ideen Ideen]

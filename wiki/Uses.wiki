@@ -1,6 +1,0 @@
-#summary used ressources of other projects
-
-= OpenKubus uses... =
-
- * LUFA
- * crypto-lib

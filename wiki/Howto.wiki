@@ -2,3 +2,6 @@
 #labels Featured
 
 = Howto =
+
+   * [PAM]
+   * [SetupStick Stick in Betrieb nehmen]

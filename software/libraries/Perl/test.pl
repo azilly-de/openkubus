@@ -11,7 +11,7 @@ if(scalar @ARGV != 4)
   exit 1;
 }
 
-my $i = notsecure_auth($ARGV[0], $ARGV[1], $ARGV[2], $ARGV[3]);
+my $i = openkubus_auth($ARGV[0], $ARGV[1], $ARGV[2], $ARGV[3]);
 
 if($i >= 0) {
   print "Authentifizierung erfolreich ($i).\n";

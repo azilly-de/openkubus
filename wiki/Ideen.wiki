@@ -1,4 +1,5 @@
 #summary Ideas for future versions
+#labels Featured
 
 = Ideen =
 

@@ -1,4 +1,5 @@
 #summary Software available with OpenKubus
+#labels Featured
 
 
 = Software =

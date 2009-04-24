@@ -1,0 +1,6 @@
+#summary credits
+
+= OpenKubus uses... =
+
+ * LUFA
+ * crypto-lib

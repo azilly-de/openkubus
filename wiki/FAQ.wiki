@@ -1,3 +1,4 @@
 #summary List of frequently asked questions
+#labels Featured
 
 = FAQ =

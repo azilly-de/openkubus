@@ -1,0 +1,34 @@
+#summary Einrichtung des PAM-Moduls
+
+= Einrichten des PAM-Moduls =
+
+PAM (Pluggable Authentication Modules) ist eine Programmierschnittstelle für
+Authentifizierungsdienste. Mittels des PAM-Moduls für den OpenKubus-Stick ist es
+möglich, die Benutzerauthentifizierung um die Eingabe des Sticks zu erweitern.
+Um sich am System anmelden zu können (z.B. via SSH), ist es dann notwendig, den
+richtigen Stick zu besitzen.
+
+== Installation ==
+Zum Kompilieren sind die Entwicklungsdateien von gcrypt und PAM notwendig,
+sowie gcc, make und die C Entwicklungsdateien. (Debian Pakete: make
+libgcrypt11-dev, make, gcc, libc6-dev)
+
+ # in das Unterverzeichnis `pam` wechseln und mittels `make` den Quellcode kompilieren
+ # PAM-Modul `pam_stick.so` mittels `make install` in das Verzeichnis `/lib/security/pam` kopieren
+ # Dateirecht von `/lib/security/pam\_stick.so` überprüfen (solte `-rw-r--r--` sein)
+ # PAM-Konfigurationsdateien anpassen (`/etc/pam.d/`)
+ # Passwort-Datei `/etc/openkubus-passwd` erstellen und Rechte auf `-rw-------` setzen
+
+== `/etc/not-passwd` ==
+In der Datei /etc/openkubus-passwd stehen die notwendigen Daten, um Benutzer mittels
+des OpenKubus-Sticks authentifizieren zu können. Diese Datei darf nur vom Benutzer root
+gelesen und geschrieben werden dürfen!
+
+Format: Benutzer AES-Schlüssel Datenblock Nummer
+ * Benutzer: Benutzer auf dem System
+ * AES-Schlüssel: AES-Schlüssel, der auf dem Stick gespeichert ist (32 Zeichen)
+ * Datenblock: Datenblock, der auf dem Stick gespeichert ist (14 Zeichen)
+ * Nummer: Counter, der automatisch hochgezählt wird
+
+Der AES-Schlüssel und der Datenblock müssen geheim gehalten werden, um die
+Sicherheits der Authentifizierung zu gewährleisten.

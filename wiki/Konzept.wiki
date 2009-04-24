@@ -1,4 +1,5 @@
 #summary Design of OpenKubus
+#labels Featured,Phase-Design
 
 = Konzept =
 

@@ -32,3 +32,26 @@ Format: Benutzer AES-Schlüssel Datenblock Nummer
 
 Der AES-Schlüssel und der Datenblock müssen geheim gehalten werden, um die
 Sicherheits der Authentifizierung zu gewährleisten.
+
+
+== Konfiguration von PAM ==
+
+Um PAM dazu zu bewegen, das neue Modul für die Authentifizierung zu nutzen, muss man die PAM Konfigurationsdateien bearbeitet werden. Unter Ubuntu und Debian findet man diese unter `/etc/pam.d/`.
+
+Beispiel für `sudo` (`/etc/pam.d/sudo`):
+{{{
+#%PAM-1.0
+
+@include common-auth
+@include common-account
+
+auth    required pam_openkubus.so
+
+session required pam_permit.so
+session required pam_limits.so
+}}}
+
+
+== SSH ==
+
+Um das OpenKubus PAM-Modul für die Authentifizierung bei SSH zu benutzen, muss neben der PAM-Konfigurationsdatei für SSH (`/etc/pam.d/ssh`) auch die Konfigurationsdatei für den SSH-Daemon (`/etc/ssh/sshd_config`) angepasst werden: {{{ UsePAM yes }}}

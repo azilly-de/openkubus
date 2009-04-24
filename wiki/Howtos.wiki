@@ -2,5 +2,5 @@
 
 = Howto =
 
-   * [PAM]
    * [SetupStick Stick in Betrieb nehmen]
+   * [PAM]

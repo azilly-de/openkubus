@@ -1,6 +1,6 @@
 #summary credits
 
-= OpenKubus uses... =
+= Credits =
 
  * LUFA
  * crypto-lib

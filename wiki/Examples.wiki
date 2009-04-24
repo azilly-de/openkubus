@@ -1,0 +1,7 @@
+#summary Examples of using OpenKubus
+
+== OpenKubus und PAM ==
+
+[http://openkubus.googlecode.com/svn/trunk/images/pam1.png]
+
+OpenKubus lässt sich dank des PAM-Moduls leicht zum Authentifizieren von Linux-Rechnern verwenden. Dazu muss das PAM-Modul kompiliert und die zentrale Passwortdatei `/etc/openkubus-passwd` erstellt werden. Informationen und Hilfe dazu findet sich auf der [PAM]-Seite.

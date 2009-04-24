@@ -1,4 +1,5 @@
 #summary Examples of using OpenKubus
+#labels Featured
 
 == OpenKubus und PAM ==
 

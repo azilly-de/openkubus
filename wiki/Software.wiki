@@ -1,4 +1,11 @@
+#summary Software available with OpenKubus
+
+
 = Software =
+
+== Firmware ==
+
+Firmware ist verfügbar für den usbprog und usbprogToken.
 
 == PAM-Modul ==
 

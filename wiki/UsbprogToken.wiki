@@ -5,9 +5,11 @@
 Der USBprog kann mit einem einfachen Taster zu einem Token für openKubus werden.
 
 
-= Details =
+= Umbau =
 
-Add your content here.  Format your content with:
-  * Text in *bold* or _italic_
-  * Headings, paragraphs, and lists
-  * Automatic links to other wiki pages
+ # USBprog Bootloader programmieren
+ # USBprog secstick_v1 Firmware laden
+ # USB-Funktion testen
+ # Taster anlöten
+
+= Programmierung =

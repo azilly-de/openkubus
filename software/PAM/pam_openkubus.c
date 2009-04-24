@@ -10,14 +10,14 @@
 #include <security/pam_appl.h>
 
 #include "../libraries/C/openkubus.h"
-#include "pam_stick.h"
+#include "pam_openkubus.h"
 
 #define BLOCKSIZE 16
 #define BUFFER    500
 #define PASSWD_FILE "/etc/openkubus-passwd"
 
 #ifndef _OPENPAM
-static char password_prompt[] = "OpenKubus-Secure: ";
+static char password_prompt[] = "OpenKubus-Pad: ";
 #endif
 
 #ifndef PAM_EXTERN

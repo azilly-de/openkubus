@@ -9,8 +9,8 @@ auth       required     pam_env.so envfile=/etc/default/locale
 
 # Standard Un*x authentication.
 @include common-auth
-#auth       required     /home/michael/Desktop/cbc/pam_stick_t.so
-auth       required     /home/michael/Desktop/cbc/example.so
+
+auth       required     pam_openkubus.so
 
 #auth       required         /home/michael/Desktop/cbc/pam_stick_t.so
 

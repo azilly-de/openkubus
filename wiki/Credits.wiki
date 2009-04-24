@@ -3,5 +3,5 @@
 = Credits =
 
 OpenKubus benutzt die Arbeit folgender Projekte:
- * LUFA
- * crypto-lib
+ * [http://www.fourwalledcubicle.com/LUFA.php LUFA]
+ * [http://www.das-labor.org/wiki/Crypto-avr-lib crypto-lib]

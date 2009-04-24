@@ -19,7 +19,7 @@ libgcrypt11-dev, make, gcc, libc6-dev)
  # PAM-Konfigurationsdateien anpassen (`/etc/pam.d/`)
  # Passwort-Datei `/etc/openkubus-passwd` erstellen und Rechte auf `-rw-------` setzen
 
-== `/etc/not-passwd` ==
+== `/etc/openkubus-passwd` ==
 In der Datei /etc/openkubus-passwd stehen die notwendigen Daten, um Benutzer mittels
 des OpenKubus-Sticks authentifizieren zu können. Diese Datei darf nur vom Benutzer root
 gelesen und geschrieben werden dürfen!

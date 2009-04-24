@@ -1,3 +1,5 @@
+#summary Ideas for future versions
+
 = Ideen =
 
  * asymmetrische Verschlüsselung mittels Elliptic Curves

@@ -2,5 +2,6 @@
 
 = Credits =
 
+OpenKubus benutzt die Arbeit folgender Projekte:
  * LUFA
  * crypto-lib

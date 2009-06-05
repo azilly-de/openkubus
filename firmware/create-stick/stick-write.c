@@ -1,7 +1,9 @@
+#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <usb.h>
 #include <string.h> 
+#include <unistd.h>
+#include <usb.h>
 
 #include "../addresses.h"
 
@@ -9,9 +11,12 @@
 #define VID 0x0400
 #define PID 0xc35d
 
+char *PROGNAME;
+
+void usage(void);
+
 struct usb_dev_handle *easyAVR_Open ()
 {
-//  usb_set_debug (2);
   usb_init ();
   usb_find_busses ();
   usb_find_devices ();
@@ -65,30 +70,47 @@ int main (int argc, char **argv)
 {
   struct usb_dev_handle *usb_handle = easyAVR_Open ();
   uint8_t lock = 0;
+  int lflag = 0, hflag = 0, dflag = 0;
+  char *password = NULL;
+  int c;
 
-  if(argc < 3)
+  PROGNAME = argv[0];
+
+  opterr = 0;
+     
+  while ((c = getopt (argc, argv, "dhlp:")) != -1)
   {
-    fprintf(stderr, "Usage: %s key data [lock]\n", argv[0]);
+    switch (c)
+    {
+      case 'd': dflag = 1; break;
+      case 'l': lflag = 1; break;
+      case 'h': hflag = 1; break;
+      case 'p': password = optarg; break;
+    }
+  }
+
+  if(hflag)
+  {
+    usage();
+    exit(0);
+  }
+
+  if(password == NULL)
+  {
+    fprintf(stderr, "No password omitted.\n\n");
+    usage();
     exit(1);
   }
-  else if(argc > 3)
-    lock = 1;
 
-  if(strlen(argv[1]) < 32)
+  if(strlen(password) != 48)
   {
-    fprintf (stderr, "\nKey too short.\n");
-    exit(2);
+    fprintf(stderr, "Password must have 48 characters. (password omitted: %d)\n\n", strlen(password));
+    usage();
+    exit(1);
   }
-  else if(strlen(argv[1]) > 32)
-    fprintf(stderr, "Warning: Key too long.\n");
-
-  if(strlen(argv[2]) < 14)
-  {
-    fprintf(stderr, "\nData too short.\n");
-    exit(3);
-  }
-  else if(strlen(argv[2]) > 14)
-    fprintf(stderr, "Warning: Data too long.\n");
+  
+  if(dflag)
+    usb_set_debug (2);
 
   if(usb_handle == NULL)
   {
@@ -109,4 +131,18 @@ int main (int argc, char **argv)
   easyAVR_Close (usb_handle);
 
   return 0;
+}
+
+void usage(void)
+{
+  fprintf(stderr, "Usage: %s [-l] password\n\n", PROGNAME);
+
+  fprintf(stderr, "%s: writes password into EEPROM of OpenKubus-Stick.\n", PROGNAME);
+  fprintf(stderr, "USB-vendor requests will be used to send the password to the stick.\n");
+  fprintf(stderr, "Attention: run this script as root!\n\n");
+
+  fprintf(stderr, "-p password: password (must have 48 characters)\n");
+  fprintf(stderr, "-d: show debugging information\n");
+  fprintf(stderr, "-l: lock stick; stick will then ignore USB-vendor-requests\n");
+  fprintf(stderr, "-h: show this help\n");
 }

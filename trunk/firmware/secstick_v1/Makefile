@@ -255,7 +255,7 @@ MSG_CLEANING = Cleaning project:
 
 
 # Define all object files.
-OBJ = $(SRC:.c=.o) $(ASRC:.S=.o) crypto-lib/bin/aes256_dec.o crypto-lib/bin/aes_dec.o crypto-lib/bin/aes_invsbox.o crypto-lib/bin/aes_sbox.o crypto-lib/bin/aes256_enc.o crypto-lib/bin/aes_enc.o crypto-lib/bin/aes_keyschedule.o crypto-lib/bin/gf256mul.o
+OBJ = $(SRC:.c=.o) $(ASRC:.S=.o) ../crypto-lib/bin/aes256_dec.o ../crypto-lib/bin/aes_dec.o ../crypto-lib/bin/aes_invsbox.o ../crypto-lib/bin/aes_sbox.o ../crypto-lib/bin/aes256_enc.o ../crypto-lib/bin/aes_enc.o ../crypto-lib/bin/aes_keyschedule.o ../crypto-lib/bin/gf256mul.o
 
 
 # Define all listing files.

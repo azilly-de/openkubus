@@ -9,21 +9,21 @@
 #include <util/delay.h>
 
 #include "main.h"
-#include "addresses.h"
+#include "../addresses.h"
 #include "base64.h"
 //#include "cbc.h"
 #include "eeprom.h"
 #include "usbn2mc.h"
 
-#include "crypto-lib/aes.h"
-#include "crypto-lib/aes256_dec.h"
-#include "crypto-lib/aes256_enc.h"
-#include "crypto-lib/aes_dec.h"
-#include "crypto-lib/aes_enc.h"
-#include "crypto-lib/aes_invsbox.h"
-#include "crypto-lib/aes_keyschedule.h"
-#include "crypto-lib/aes_sbox.h"
-#include "crypto-lib/gf256mul.h"
+#include "../crypto-lib/aes.h"
+#include "../crypto-lib/aes256_dec.h"
+#include "../crypto-lib/aes256_enc.h"
+#include "../crypto-lib/aes_dec.h"
+#include "../crypto-lib/aes_enc.h"
+#include "../crypto-lib/aes_invsbox.h"
+#include "../crypto-lib/aes_keyschedule.h"
+#include "../crypto-lib/aes_sbox.h"
+#include "../crypto-lib/gf256mul.h"
 
 
 struct packet_t

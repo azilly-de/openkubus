@@ -109,7 +109,7 @@ FORMAT = ihex
 
 
 # Target file name (without extension).
-TARGET = Keyboard
+TARGET = openkubus
 
 
 # Object files directory
@@ -551,7 +551,7 @@ dfu-ee: $(TARGET).hex $(TARGET).eep
 	dfu-programmer $(MCU) reset
 
 download:
-	avrdude -p at90usb162 -c avrispv2 -P usb -U flash:w:Keyboard.hex
+	avrdude -p at90usb162 -c avrispv2 -P usb -U flash:w:openkubus.hex
 
 # Generate avr-gdb config/init file which does the following:
 #     define the reset signal, load the target file, connect to target, and set 

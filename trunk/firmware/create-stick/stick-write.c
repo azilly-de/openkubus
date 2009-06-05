@@ -66,7 +66,6 @@ int main (int argc, char **argv)
   struct usb_dev_handle *usb_handle = easyAVR_Open ();
   uint8_t lock = 0;
 
-
   if(argc < 3)
   {
     fprintf(stderr, "Usage: %s key data [lock]\n", argv[0]);

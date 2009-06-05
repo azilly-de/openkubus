@@ -180,18 +180,24 @@ void USBNDecodeVendorRequest(DeviceRequest *req)
   uint8_t rtype = (req->bmRequestType >> 5) & 3; // 3: 11
 
   // check if request is vender specific and it is our request
-  if(rtype != 2 || req->bRequest != USB_WRITE_EEPROM)
-    return;
+  if(rtype != 2)
+    
+  if(req->bRequest == USB_WRITE_EEPROM)
+  {
+    uint8_t lock;
+    eeprom_read(ADDR_LOCK, &lock, 1);
 
-  uint8_t lock;
-  eeprom_read(ADDR_LOCK, &lock, 1);
+    if(lock != 0 && lock != 255) return;
 
-  if(lock != 0 && lock != 255) return;
+    uint8_t addr  = req->wValue >> 8;
+    uint8_t value = (uint8_t) req->wValue;
 
-  uint8_t addr  = req->wValue >> 8;
-  uint8_t value = (uint8_t) req->wValue;
-
-  eeprom_write(addr, &value, 1);
+    eeprom_write(addr, &value, 1);
+  }
+  else if(req->bRequest == USB_CHANGE_KEY)
+  {
+    uint8_t entry = (uint8_t) req->wValue;
+  }
 }
 
 

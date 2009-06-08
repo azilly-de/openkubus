@@ -4,4 +4,4 @@
 #define ADDR_KEY         20
 #define ADDR_DATA        60
 #define USB_WRITE_EEPROM 30
-#define USB_CHANGE_KEY   42
+#define USB_CHANGE_KEY   8

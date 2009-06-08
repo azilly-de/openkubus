@@ -47,6 +47,22 @@ void crypt_initialize(void)
   gcry_control(GCRYCTL_INITIALIZATION_FINISHED, 0);
 }
 
+// uses gcrypt to encrypt a crypted block (SHA256) with given key
+char *encrypt(char *in, char *out, const char *key)
+{
+  gcry_cipher_hd_t hd;
+
+  if (!gcry_control (GCRYCTL_INITIALIZATION_FINISHED_P))
+    crypt_initialize();
+
+  gcry_cipher_open(&hd, GCRY_CIPHER_RIJNDAEL256, GCRY_CIPHER_MODE_ECB, 0);
+  gcry_cipher_setkey(hd, key, KEYSIZE);
+  gcry_cipher_encrypt(hd, out, 32, in, 16);
+  gcry_cipher_close(hd);
+
+  return out;
+}
+
 // uses gcrypt to decrypt a crypted block (SHA256) with given key
 char *decrypt(char *crypted, const char *key)
 {
@@ -64,6 +80,22 @@ char *decrypt(char *crypted, const char *key)
 }
 
 // converts string to real base64
+void base642pad(char *str)
+{
+  int i;
+
+  for(i = 0; i < strlen(str); i++)
+  {
+    switch(str[i])
+    {
+      case '/': str[i] = '!'; break;
+      case '=': str[i] = '.'; break;
+      case '+': str[i] = '-'; break;
+    }
+  }
+}
+
+// converts string to real base64
 void pad2base64(char *str)
 {
   char a = str[0];
@@ -75,7 +107,7 @@ void pad2base64(char *str)
 
     switch(str[i])
     {
-      case ' ': str[i] = '/'; break;
+      case '!': str[i] = '/'; break;
       case '.': str[i] = '='; break;
       case '-': str[i] = '+'; break;
     }
@@ -92,6 +124,37 @@ void pad2base64(char *str)
     }
   }
   str[i] = '\0';
+}
+
+void openkubus_gen_pad(const char *pw, uint16_t offset, uint16_t num, char *pad)
+{
+  char data[17];
+  char aes[33];
+  char crypted[33];
+  uint8_t i;
+
+  num += offset;
+
+  data[0] = (uint8_t) num;
+  data[1] = (uint8_t) (num >> 8);
+
+  for(i = 0; i < 14; i++)
+    data[2+i] = pw[32+i];
+  data[16] = 0;
+
+  for(i = 0; i < 32; i++)
+    aes[i] = pw[i];
+  aes[32] = 0;
+
+  encrypt(data, crypted, aes);
+
+  pad[0] = 'z';
+  i = raw_to_base64(crypted, 16, &pad[1], 60);
+  printf("noch\n");
+  pad[i+1] = 0;
+  printf("noch\n");
+  base642pad(pad);
+  printf("noch\n");
 }
 
 int32_t openkubus_authenticate(const char *pad, const char *pw, uint16_t offset, uint16_t num)

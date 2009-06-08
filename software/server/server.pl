@@ -3,8 +3,6 @@
 use warnings;
 use strict;
 
-use Crypt::OpenSSL::RSA;
-use Crypt::OpenSSL::Random;
 use Crypt::Rijndael;
 use MIME::Base64;
 use POE qw(Component::Server::TCP);
@@ -12,8 +10,7 @@ use YAML::Syck qw< LoadFile DumpFile >;
 
 use constant FILENAME => "geheim.yaml";
 
-my $db = LoadFile(FILENAME);
-my $rsa_priv = Crypt::OpenSSL::RSA->new_private_key(slurp("priv.ca"));
+my $db = LoadFile(FILENAME);;
 
 use sigtrap 'handler' => sub {
   print STDERR "Shutting down...\n";
@@ -29,26 +26,18 @@ POE::Component::Server::TCP->new
       my ($session, $heap, $input) = @_[ SESSION, HEAP, ARG0 ];
       local $@ = undef;
       
+      #print ">$input<\n";
       $input =~ s/^\s+//;
       $input =~ s/\s+$//;
 
-      my $plain;
-      eval {
-        $plain = $rsa_priv->decrypt(decode_base64($input));
-      };
-
-      my ($user, $crypted);
-      if($@)
-      {
-        ($user, $crypted) = split(/\s+/, $plain, 2);
-      }
+      my ($user, $crypted)  = split(/\s+/, $input, 2);
 
       if(defined($user) and defined($crypted) and auth($user, $crypted)) {
         $heap->{client}->put("ok");
-        print "> ok\n";
+        #print "> ok\n";
       } else {
         $heap->{client}->put("failed");
-        print "> failed\n";
+        #print "> failed\n";
       }
     }
   );
@@ -70,10 +59,12 @@ sub auth {
   my $key = $db->{$user}->{"key"};
 
   return unless defined($key) and defined($crypted);
+  my $key_aes  = substr($key,  0, 32);
+  my $key_data = substr($key, 32, 14);
 
   chomp $crypted;
 
-  $crypted =~ s/ /\//g;
+  $crypted =~ s/!/\//g;
   $crypted =~ s/\./\=/g;
   $crypted =~ s/\-/\+/g;
 
@@ -89,12 +80,13 @@ sub auth {
 
   $crypted = decode_base64($crypted);
 
-  my $cipher = Crypt::Rijndael->new($key);
+  my $cipher = Crypt::Rijndael->new($key_aes);
   my $plaintext;
   eval {
     $plaintext = $cipher->decrypt($crypted);
   };
   return if $@;
+  print $plaintext;
 
   $plaintext = reverse($plaintext);
   my $i = chop($plaintext);
@@ -102,7 +94,7 @@ sub auth {
   $plaintext = reverse($plaintext);
   my $n = ord($i) + (ord($j) << 8);
 
-  if($plaintext eq $db->{$user}->{"data"}) {
+  if($plaintext eq $key_data) {
     if($n > $db->{$user}->{"number"}) {
       $db->{$user}->{"number"} = $n;
       return 1;
@@ -112,15 +104,4 @@ sub auth {
   } else {
     return;
   }
-}
-
-sub slurp {
-  my $filename = shift;
-  local $/ = undef;
-
-  open(my $fh, "<", $filename) or return;
-  my $content = <$fh>;
-  close $fh                    or return;
-
-  return $content;
 }

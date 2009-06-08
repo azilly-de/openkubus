@@ -50,14 +50,15 @@ void eeprom_write(struct usb_dev_handle *usb_handle, uint8_t addr, char *s, uint
 
   for(i = 0; i < len; i ++)
   {
-    //printf("%u %c\n", addr+i, s[i]);
+    //printf("%c\n", s[i]);
     data  = (addr+i) << 8;
     data |= (s[i]);
     
     // int usb_control_msg(usb_dev_handle *dev, int requesttype, int request, int value, int index, char *bytes, int size, int timeout);
     // requesttype: 01000000: vendor specific request from host to device
     // value: high byte: address, lower byte: data
-    j = usb_control_msg(usb_handle, 64, 30, data, 0, NULL, 0, 100);
+    j = usb_control_msg(usb_handle, 64, USB_WRITE_EEPROM, data, 0, NULL, 0, 100);
+
     if(j != 0)
     {
       fprintf(stderr, "USB error: %d\n", j);
@@ -69,7 +70,6 @@ void eeprom_write(struct usb_dev_handle *usb_handle, uint8_t addr, char *s, uint
 int main (int argc, char **argv)
 {
   struct usb_dev_handle *usb_handle = easyAVR_Open ();
-  uint8_t lock = 0;
   int lflag = 0, hflag = 0, dflag = 0;
   char *password = NULL;
   int c;
@@ -102,9 +102,9 @@ int main (int argc, char **argv)
     exit(1);
   }
 
-  if(strlen(password) != 48)
+  if(strlen(password) != 46)
   {
-    fprintf(stderr, "Password must have 48 characters. (password omitted: %d)\n\n", strlen(password));
+    fprintf(stderr, "Password must have 46 characters. (password omitted: %d)\n\n", strlen(password));
     usage();
     exit(1);
   }
@@ -119,13 +119,13 @@ int main (int argc, char **argv)
   }
   
   // key
-  eeprom_write(usb_handle, ADDR_KEY,  argv[1], 32);
+  eeprom_write(usb_handle, ADDR_KEY,  &password[0], 32);
   // data
-  eeprom_write(usb_handle, ADDR_DATA, argv[2], 14);
+  eeprom_write(usb_handle, ADDR_DATA, &password[32], 14);
   // counter
   eeprom_write(usb_handle, ADDR_COUNTER, "\0\0", 2);
   // lock
-  if(lock)
+  if(lflag)
     eeprom_write(usb_handle, ADDR_LOCK, "l", 1);
 
   easyAVR_Close (usb_handle);

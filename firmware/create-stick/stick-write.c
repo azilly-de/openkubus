@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h> 
 #include <unistd.h>
+#include <errno.h>
 #include <usb.h>
 
 #include "../addresses.h"
@@ -71,21 +72,25 @@ int main (int argc, char **argv)
 {
   struct usb_dev_handle *usb_handle = easyAVR_Open ();
   int lflag = 0, hflag = 0, dflag = 0;
-  char *password = NULL;
+  int offset;
+  char *password   = NULL;
+  char *offset_arg = NULL;
+  char *endptr;
   int c;
 
   PROGNAME = argv[0];
 
   opterr = 0;
      
-  while ((c = getopt (argc, argv, "dhlp:")) != -1)
+  while ((c = getopt (argc, argv, "dhlp:o:")) != -1)
   {
     switch (c)
     {
       case 'd': dflag = 1; break;
       case 'l': lflag = 1; break;
       case 'h': hflag = 1; break;
-      case 'p': password = optarg; break;
+      case 'p': password   = optarg; break;
+      case 'o': offset_arg = optarg; break;
     }
   }
 
@@ -108,7 +113,28 @@ int main (int argc, char **argv)
     usage();
     exit(1);
   }
-  
+
+  offset = 0;
+  if(offset_arg != NULL)
+  {
+    offset = strtol(offset_arg, &endptr, 10);
+
+    // see: $ man strtol
+    if((errno == ERANGE && (offset == LONG_MAX || offset == LONG_MIN)) || (errno != 0 && offset == 0) || endptr == offset_arg)
+    {
+      fprintf(stderr, "Converting offset argument to integer failed.\n\n");
+      usage();
+      exit(1);
+    }
+
+    if(offset < 0 || offset > 65536)
+    {
+      fprintf(stderr, "offset in wrong range.\n\n");
+      usage();
+      exit(1);
+    }
+  }
+ 
   if(dflag)
     usb_set_debug (2);
 
@@ -142,6 +168,7 @@ void usage(void)
   fprintf(stderr, "Attention: run this script as root!\n\n");
 
   fprintf(stderr, "-p password: password (must have 48 characters)\n");
+  fprintf(stderr, "-o offset: offset value\n");
   fprintf(stderr, "-d: show debugging information\n");
   fprintf(stderr, "-l: lock stick; stick will then ignore USB-vendor-requests\n");
   fprintf(stderr, "-h: show this help\n");

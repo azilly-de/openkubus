@@ -47,7 +47,7 @@ void crypt_initialize(void)
   gcry_control(GCRYCTL_INITIALIZATION_FINISHED, 0);
 }
 
-// uses gcrypt to encrypt a crypted block (SHA256) with given key
+// uses gcrypt to encrypt 16-byte to a crypted block (SHA256) with given key
 char *encrypt(char *in, char *out, const char *key)
 {
   gcry_cipher_hd_t hd;
@@ -79,7 +79,7 @@ char *decrypt(char *crypted, const char *key)
   return crypted;
 }
 
-// converts string to real base64
+// converts real base64 to pad
 void base642pad(char *str)
 {
   int i;
@@ -150,11 +150,8 @@ void openkubus_gen_pad(const char *pw, uint16_t offset, uint16_t num, char *pad)
 
   pad[0] = 'z';
   i = raw_to_base64(crypted, 16, &pad[1], 60);
-  printf("noch\n");
   pad[i+1] = 0;
-  printf("noch\n");
   base642pad(pad);
-  printf("noch\n");
 }
 
 int32_t openkubus_authenticate(const char *pad, const char *pw, uint16_t offset, uint16_t num)

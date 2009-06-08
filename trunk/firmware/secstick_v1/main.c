@@ -11,7 +11,6 @@
 #include "main.h"
 #include "../addresses.h"
 #include "base64.h"
-//#include "cbc.h"
 #include "eeprom.h"
 #include "usbn2mc.h"
 
@@ -180,14 +179,14 @@ void USBNDecodeVendorRequest(DeviceRequest *req)
   uint8_t rtype = (req->bmRequestType >> 5) & 3; // 3: 11
 
   // check if request is vender specific and it is our request
-  if(rtype != 2)
+  if(rtype != 2) return;
     
   if(req->bRequest == USB_WRITE_EEPROM)
   {
     uint8_t lock;
     eeprom_read(ADDR_LOCK, &lock, 1);
 
-    if(lock != 0 && lock != 255) return;
+    //if(lock != 0 && lock != 255) return;
 
     uint8_t addr  = req->wValue >> 8;
     uint8_t value = (uint8_t) req->wValue;
@@ -272,7 +271,7 @@ void usbWriteChar(char *str)
       case ' ': hex = 0x2C; break;
       case '-': hex = 0x2d; break;
       case '0': hex = 0x27; break;
-      case '/': hex = 0x2C; break;
+      case '/': modifier = 1 << 5; hex = 0x1E; break;
       case '=': hex = 0x37; break; // = => 3
       case '+': hex = 0x38; break; // = => 3
    

@@ -73,14 +73,14 @@ int main(void)
 
       aes256_ctx_t ctx;
       char out[31];
-      char seed[47] = "udeip9ruc;aequ\"ahphoongeiNaef6Garoz0JeS2ko-uZe";
+      char seed[47];//XXX = "udeip9ruc;aequ\"ahphoongeiNaef6Garoz0JeS2ko-uZe";
       char data[16];
       char counter[2];
       uint16_t n;
       uint8_t i;
 
       // read_into_ram:
-      //eeprom_read(ADDR_SEED, &seed, 46);
+      eeprom_read(ADDR_SEED, seed, 46);
 
       // increase counter
       eeprom_read(ADDR_COUNTER, counter, 2);
@@ -208,8 +208,35 @@ EVENT_HANDLER(USB_UnhandledControlPacket)
 {
   if (bmRequestType == (REQDIR_HOSTTODEVICE | REQTYPE_VENDOR | REQREC_DEVICE))
   {
-    if(bRequest == 30)
-      PORTB ^= (1 << PB4);
+    if(bRequest == USB_WRITE_EEPROM)
+    {
+      char l;
+      uint8_t lock;
+      eeprom_read(ADDR_LOCK, &l, 1);
+
+      lock = l;
+      //if(lock != 0 && lock != 255) return;
+
+      uint16_t wLength = Endpoint_Read_Word_LE();
+      uint16_t wValue  = Endpoint_Read_Word_LE();
+
+      uint8_t addr  = wValue >> 8;
+      uint8_t value = (uint8_t) wValue;
+
+			Endpoint_ClearSetupReceived();
+			
+			// Acknowledge status stage
+			while (!(Endpoint_IsSetupINReady()));
+			Endpoint_ClearSetupIN();
+
+      eeprom_write(addr, &value, 1);
+    }
+    /*
+    else if(bRequest == USB_CHANGE_KEY)
+    {
+      uint8_t entry = (uint8_t) req->wValue;
+    }
+    */
   }
 
 	// Handle HID Class specific requests

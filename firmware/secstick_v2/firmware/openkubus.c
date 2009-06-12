@@ -2,20 +2,22 @@
 #include <util/delay.h>
 #include <util/atomic.h>
 
+#define PB4 4
+#define PE6 6
 
-/*
 #include "base64.h"
+#include "../../addresses.h"
+#include "eeprom.h"
 
-#include "crypto-lib/aes.h"
-#include "crypto-lib/aes256_dec.h"
-#include "crypto-lib/aes256_enc.h"
-#include "crypto-lib/aes_dec.h"
-#include "crypto-lib/aes_enc.h"
-#include "crypto-lib/aes_invsbox.h"
-#include "crypto-lib/aes_keyschedule.h"
-#include "crypto-lib/aes_sbox.h"
-#include "crypto-lib/gf256mul.h"
-*/
+#include "../../crypto-lib/aes.h"
+#include "../../crypto-lib/aes256_dec.h"
+#include "../../crypto-lib/aes256_enc.h"
+#include "../../crypto-lib/aes_dec.h"
+#include "../../crypto-lib/aes_enc.h"
+#include "../../crypto-lib/aes_invsbox.h"
+#include "../../crypto-lib/aes_keyschedule.h"
+#include "../../crypto-lib/aes_sbox.h"
+#include "../../crypto-lib/gf256mul.h"
 
 volatile uint8_t send = 0;
 volatile char *tosend;
@@ -45,14 +47,16 @@ uint16_t IdleMSRemaining = 0;
  */
 int main(void)
 {
-  DDRD  = (1<<PD3);
+  DDRB |= (1 << PB4);
+  DDRE = 0;
+  PORTE = 0;
 
 	/* Disable watchdog if enabled by bootloader/fuses */
 	MCUSR &= ~(1 << WDRF);
 	wdt_disable();
 
 	/* Disable clock division */
-	clock_prescale_set(clock_div_1);
+	//clock_prescale_set(clock_div_1);
 	
 	/* Indicate USB not ready */
 	UpdateStatus(Status_USBNotReady);
@@ -62,56 +66,57 @@ int main(void)
 	
   while(1)
   {
-
-    Endpoint_SelectEndpoint(DATA_OUT_EPNUM);
-    if(Endpoint_ReadWriteAllowed())
-
-    if (!(PIND & 0b10000000))
+    if (!(PINE & (1 << PE6)))
     {
-    PORTD ^= (1 << PD3);
+      PORTB ^= (1 << PB4);
 
-      SendString("hallo welt");
-      /*
       aes256_ctx_t ctx;
       char out[31];
-      char key[]  = "udeip9ruc;aequ\"ahphoongeiNaef6Ga";
-      char data[] = "XXroz0JeS2ko-uZe";
-
-
+      char seed[47] = "udeip9ruc;aequ\"ahphoongeiNaef6Garoz0JeS2ko-uZe";
+      char data[16];
+      char counter[2];
+      uint16_t n;
+      uint8_t i;
 
       // read_into_ram:
-      //eeprom_read(ADDR_KEY,  &key,  32);
-      //eeprom_read(ADDR_DATA, &data[2], 14);
+      //eeprom_read(ADDR_SEED, &seed, 46);
 
       // increase counter
-      //eeprom_read(ADDR_COUNTER, data, 2);
-      //n = data[0] + (data[1] << 8);
-      //n++;
-      data[0] = 14;//(uint8_t) n;
-      data[1] = 0;//(uint8_t) (n >> 8);
-    //  eeprom_write(ADDR_COUNTER, data, 2);
+      eeprom_read(ADDR_COUNTER, counter, 2);
+      n = counter[0] + (counter[1] << 8);
+      n++;
+
+      counter[0] = (uint8_t) n;
+      counter[1] = (uint8_t) (n >> 8);
+
+      eeprom_write(ADDR_COUNTER, counter, 2);
 
       memset(&ctx, 0, sizeof(aes256_ctx_t));
       memset(out, 0, 31);
 
-      aes256_init(key, &ctx);
+      data[0] = counter[0];
+      data[1] = counter[1];
+
+      for(i = 0; i < 14; i++)
+        data[i+2] = seed[32+i];
+
+      aes256_init(seed, &ctx);
       aes256_enc(data, &ctx);
       
-
       SendString("z");
       raw_to_base64(data, 16, out, 30);
       SendString(out);
-      */
 
       _delay_ms(200);
       _delay_ms(200);
+      _delay_ms(100);
     }
   }
 }
 
 void SendString(char *str)
 {
-  // wait till send == 0
+  // wait untill send == 0
   while(send);
 
   ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
@@ -203,7 +208,7 @@ EVENT_HANDLER(USB_UnhandledControlPacket)
   if (bmRequestType == (REQDIR_HOSTTODEVICE | REQTYPE_VENDOR | REQREC_DEVICE))
   {
     if(bRequest == 30)
-      PORTD ^= (1 << PD3);
+      PORTB ^= (1 << PB4);
   }
 
 	// Handle HID Class specific requests

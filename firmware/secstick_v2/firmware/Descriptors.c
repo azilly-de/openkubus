@@ -96,8 +96,8 @@ USB_Descriptor_Device_t PROGMEM DeviceDescriptor =
 				
 	Endpoint0Size:          8,
 		
-	VendorID:               0x03EB,
-	ProductID:              0x2042,
+	VendorID:               0x300,
+	ProductID:              0xC35D,
 	ReleaseNumber:          0x0000,
 		
 	ManufacturerStrIndex:   0x01,
@@ -214,9 +214,9 @@ USB_Descriptor_String_t PROGMEM LanguageString =
  */
 USB_Descriptor_String_t PROGMEM ManufacturerString =
 {
-	Header:                 {Size: USB_STRING_LEN(16), Type: DTYPE_String}, // XXX
+	Header:                 {Size: USB_STRING_LEN(18), Type: DTYPE_String}, // XXX
 		
-	UnicodeString:          L"Embedded Proje"
+	UnicodeString:          L"Embedded Projects"
 };
 
 /** Product descriptor string. This is a Unicode string containing the product's details in human readable form,
@@ -225,9 +225,9 @@ USB_Descriptor_String_t PROGMEM ManufacturerString =
  */
 USB_Descriptor_String_t PROGMEM ProductString =
 {
-	Header:                 {Size: USB_STRING_LEN(18), Type: DTYPE_String},
+	Header:                 {Size: USB_STRING_LEN(16), Type: DTYPE_String},
 		
-	UnicodeString:          L"Secure-OTPW-Stick"
+	UnicodeString:          L"OpenKubus Stick"
 };
 
 /** This function is called by the library when in device mode, and must be overridden (see StdDescriptors.h

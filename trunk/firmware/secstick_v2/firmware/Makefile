@@ -60,13 +60,13 @@
 
 
 # MCU name
-MCU = at90usb162
+MCU = atmega16u4
 
 
 # Target board (see library BoardTypes.h documentation, USER or blank for projects not requiring
 # LUFA board drivers). If USER is selected, put custom board drivers in a directory called 
 # "Board" inside the application directory.
-BOARD  = USBKEY
+BOARD  = 
 
 
 # Processor frequency.
@@ -434,7 +434,7 @@ MSG_CREATING_LIBRARY = Creating library:
 
 
 # Define all object files.
-OBJ = $(SRC:%.c=$(OBJDIR)/%.o) $(CPPSRC:%.cpp=$(OBJDIR)/%.o) $(ASRC:%.S=$(OBJDIR)/%.o) crypto-lib/bin/aes256_dec.o crypto-lib/bin/aes_dec.o crypto-lib/bin/aes_invsbox.o crypto-lib/bin/aes_sbox.o crypto-lib/bin/aes256_enc.o crypto-lib/bin/aes_enc.o crypto-lib/bin/aes_keyschedule.o crypto-lib/bin/gf256mul.o
+OBJ = $(SRC:%.c=$(OBJDIR)/%.o) $(CPPSRC:%.cpp=$(OBJDIR)/%.o) $(ASRC:%.S=$(OBJDIR)/%.o) ../../crypto-lib/bin/aes256_dec.o ../../crypto-lib/bin/aes_dec.o ../../crypto-lib/bin/aes_invsbox.o ../../crypto-lib/bin/aes_sbox.o ../../crypto-lib/bin/aes256_enc.o ../../crypto-lib/bin/aes_enc.o ../../crypto-lib/bin/aes_keyschedule.o ../../crypto-lib/bin/gf256mul.o
 
 # Define all listing files.
 LST = $(SRC:%.c=$(OBJDIR)/%.lst) $(CPPSRC:%.cpp=$(OBJDIR)/%.lst) $(ASRC:%.S=$(OBJDIR)/%.lst) 
@@ -551,7 +551,7 @@ dfu-ee: $(TARGET).hex $(TARGET).eep
 	dfu-programmer $(MCU) reset
 
 download:
-	avrdude -p at90usb162 -c avrispv2 -P usb -U flash:w:openkubus.hex
+	avrdude -p m16u4 -c avrispv2 -P usb -U flash:w:openkubus.hex
 
 # Generate avr-gdb config/init file which does the following:
 #     define the reset signal, load the target file, connect to target, and set 

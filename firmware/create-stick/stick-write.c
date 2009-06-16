@@ -167,7 +167,7 @@ void usage(void)
   fprintf(stderr, "USB-vendor requests will be used to send the password to the stick.\n");
   fprintf(stderr, "Attention: run this script as root!\n\n");
 
-  fprintf(stderr, "-p password: password (must have 48 characters)\n");
+  fprintf(stderr, "-p password: password (must have 46 characters)\n");
   fprintf(stderr, "-o offset: offset value\n");
   fprintf(stderr, "-d: show debugging information\n");
   fprintf(stderr, "-l: lock stick; stick will then ignore USB-vendor-requests\n");

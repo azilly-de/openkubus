@@ -10,13 +10,33 @@ use YAML::Syck qw< LoadFile DumpFile >;
 
 use constant FILENAME => "geheim.yaml";
 
-my $db = LoadFile(FILENAME);;
+my $db = LoadFile(FILENAME);
 
-use sigtrap 'handler' => sub {
-  print STDERR "Shutting down...\n";
-  DumpFile(FILENAME, $db);
-  exit();
-}, 'normal-signals';
+
+POE::Session->create
+  ( inline_states =>
+    { _start         => sub {
+        $_[KERNEL]->sig(INT =>'got_signal');
+        $_[KERNEL]->sig(HUP =>'got_signal');
+        $_[KERNEL]->sig(TERM=>'got_signal');
+        $_[KERNEL]->sig(QUIT=>'got_quit');
+        $_[KERNEL]->alias_set('sighandler');
+      },
+      _stop          => sub {},
+      got_signal     => sub {
+        my $signal = $_[ARG0];
+
+        if($signal eq "HUP") {
+          print STDERR "Got HUP. reloading...\n";
+          load_db();
+          $_[KERNEL]->sig_handled;
+        } else {
+          print STDERR "Shutting down (signal: $signal)...\n";
+          DumpFile(FILENAME, $db);
+        }
+      },
+    },
+  );
 
 
 POE::Component::Server::TCP->new
@@ -48,6 +68,9 @@ print STDERR "Server running...\n";
 $poe_kernel->run();
 exit 0;
 
+sub load_db {
+  $db = LoadFile(FILENAME);
+}
 
 sub auth { 
   my ($user, $crypted) = @_;

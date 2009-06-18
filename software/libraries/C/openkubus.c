@@ -14,7 +14,7 @@
 
 
 // uses gcrypt to encrypt 16-byte to a crypted block (SHA256) with given key
-unsigned char *encrypt(unsigned char *ciphertext, const unsigned char *plaintext, const unsigned char *key)
+unsigned char *encrypt(unsigned char *ciphertext, unsigned char *plaintext, const unsigned char *key)
 {
   unsigned long rk[RKLENGTH(KEYBITS)];
 
@@ -91,7 +91,7 @@ void pad2base64(char *str)
   str[i] = '\0';
 }
 
-void openkubus_gen_pad(const char *pw, uint16_t offset, uint16_t num, char *pad)
+void openkubus_gen_pad(const char *pw, int offset, int num, char *pad)
 {
   char data[17];
   char aes[33];
@@ -120,7 +120,7 @@ void openkubus_gen_pad(const char *pw, uint16_t offset, uint16_t num, char *pad)
   base642pad(pad);
 }
 
-int32_t openkubus_authenticate(const char *pad, const char *pw, uint16_t offset, uint16_t num)
+int openkubus_authenticate(const char *pad, const char *pw, uint16_t offset, uint16_t num)
 {
   char *plain = NULL;
   int len;

@@ -1,0 +1,6 @@
+OpenKubus uses the work of following projects:
+  * LUFA USB-stack:
+    http://www.fourwalledcubicle.com/LUFA.php
+  * AVR-Crypto-Lib:
+    http://www.das-labor.org/wiki/Crypto-avr-lib
+

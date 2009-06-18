@@ -1,0 +1,33 @@
+Description:
+  This file contains the firmware for OpenKubus hardware rev 2.
+  For detail information on the hardware (Rev. 2), have a look at the boards/
+  directory. 
+  The firmware uses the LUFA USB stack. This stack is MIT licenced. Have a look
+  at the project page at http://code.google.com/p/lufa-lib/ and
+  http://www.fourwalledcubicle.com/LUFA.php for further information.
+
+  
+Compiling:
+  You will need the GNU tool chain for AVR microcontrollers and make. If you
+  use a linux distributions, check out if there are binary packages available.
+  (For Debian and Ubuntu users: You will need to install avr-libc, avrdude,
+  binutils-avr, gcc-avr and make)
+  The atmega16u4 is quite young, so it may be neccessary to install a recent
+  version of the cross utils. (June 2009)
+
+  Before you try to compile the firmware, make sure you have already compiled
+  the crypto-lib. If you haven't, go to ../crypto-lib/ and type make to compile
+  it.
+
+  > make
+  should now compile your firmware. If compiling was successfull, there should
+  be a file "openkubus.bin" in your directory.
+
+
+Flashing:
+  At this point, you are on your own.
+
+
+From here:
+  Your hardware is ready and waits to be initialized. Have a look at
+  firmware/initialize for further information.

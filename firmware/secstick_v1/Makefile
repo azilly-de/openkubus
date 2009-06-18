@@ -49,7 +49,7 @@ F_CPU = 16000000UL
 FORMAT = ihex
 
 # Target file name (without extension).
-TARGET = main
+TARGET = openkubus
 
 
 # List C source files here. (C dependencies are automatically generated.)
@@ -352,7 +352,7 @@ extcoff: $(TARGET).elf
 	@echo
 	@echo $(MSG_FLASH) $@
 	$(OBJCOPY) -O $(FORMAT) -R .eeprom $< $@
-	avr-objcopy -I ihex -O binary main.hex main.bin
+	avr-objcopy -I ihex -O binary openkubus.hex openkubus.bin
 
 
 %.eep: %.elf
@@ -438,15 +438,16 @@ build elf hex eep lss sym coff extcoff \
 clean clean_list program
 
 download:
-	avrdude -p m16 -c avrisp2 -P usb -U flash:w:main.hex
+	avrdude -p m16 -c avrisp2 -P usb -U flash:w:openkubus.hex
+
 fuse:
 	avrdude -p m16 -c avrispv2 -P usb -B 10 -U lfuse:w:0xe0:m
 	avrdude -p m16 -c avrispv2 -P usb -B 10 -U hfuse:w:0xd9:m
 
+usprog_download:
+	usbprog device 0 upload openkubus.bin
 
-loader:
-	usbprog device 0 upload main.bin
-
-ready:
-	avrdude -p m16 -c avrispv2 -P usb -B 10 -U lock:w:0x00:m
-	avrdude -p m16 -c avrispv2 -P usb -B 10 -U lfuse:w:0x3f:m -U hfuse:w:0xf1:m 
+lockbits:
+	#Setting lockbits is dangerous. If you know what to do, uncomment the last two lines in Makefile
+	#avrdude -p m16 -c avrispv2 -P usb -B 10 -U lock:w:0x00:m
+	#avrdude -p m16 -c avrispv2 -P usb -B 10 -U lfuse:w:0x3f:m -U hfuse:w:0xf1:m 

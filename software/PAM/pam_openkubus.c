@@ -30,7 +30,6 @@ char line[BUFFER];
 // called before openkubus_authenticate returns
 int _cleanup(FILE *file, int ret)
 {
-
   if(file != NULL)
   {
     fclose(file);
@@ -42,7 +41,6 @@ int _cleanup(FILE *file, int ret)
 
 // called when authentication was successfull
 // updates number of last sucessfull authentication to prevent replay attacks
-// XXX: still buggy: corrupts short lines ###HAS_TO_BE_FIXED##
 void _update_passwd(FILE *file, char *num, int k)
 {
   long int len = strlen(num);
@@ -50,16 +48,30 @@ void _update_passwd(FILE *file, char *num, int k)
   sprintf(num_inc, "%d", k);
   int diff = strlen(num_inc) - strlen(num);
 
-  // XXX
+  // if length of ASCII representation of number has increased (eg. 9 -> 10;
+  // was: 1 byte, now: 2 bytes)
   if(diff > 0)
   {
     int i;
-    unsigned long pos = ftell(file);
+    unsigned long pos = ftell(file); // current position in stream
+    int quit = 0;
 
-    // seek
-    while(fgets(line, BUFFER, file) != NULL)
+    // shift
+    while(quit != 1)
     {
-      i = strlen(line);
+      i = 0;
+
+      // read up to BUFFER-2 characters and save them in line
+      while(i < BUFFER - 2)
+      {
+        char c = getc(file);
+
+        if(c == EOF) { quit = 1; break; }
+
+        line[i++] = c;
+      }
+      line[i] = '\0';
+
       fseek(file, -i+diff, SEEK_CUR);
       fputs(line, file);
     }
@@ -184,7 +196,8 @@ pam_sm_authenticate(pam_handle_t *pamh, int flags,
         free(resp->resp);
       free(resp);
     }
-  msg.msg_style = PAM_PROMPT_ECHO_ON; // XXX
+  // change to PAM_PROMPT_ECHO_OFF, if you want no password-echo
+  msg.msg_style = PAM_PROMPT_ECHO_ON;
 #endif
     if (pam_err == PAM_SUCCESS)
       break;
@@ -195,21 +208,23 @@ pam_sm_authenticate(pam_handle_t *pamh, int flags,
   if (pam_err != PAM_SUCCESS)
     return (PAM_AUTH_ERR);
 
+  // open file
   if((file = fopen(PASSWD_FILE, "r+")) == NULL)
     return PAM_AUTH_ERR;
 
+  // parse file
   if(_parse_passwd(file, user, &pw, &offset, &num) != 0)
     return _cleanup(file, PAM_AUTH_ERR);
 
+  // check, if authentication is successfull
   int i;
   if((i = openkubus_authenticate(pad, pw, atoi(offset), atoi(num))) > 0)
   {
+    // update number in password file
     _update_passwd(file, num, i+1);
 
     return _cleanup(file, PAM_SUCCESS);
   }
-  else
-    printf("%d\n", i);
 
   return _cleanup(file, PAM_AUTH_ERR);
 }
@@ -256,5 +271,5 @@ pam_sm_chauthtok(pam_handle_t *pamh, int flags,
 
 
 #ifdef PAM_MODULE_ENTRY
-PAM_MODULE_ENTRY("pam_stick.so");
+PAM_MODULE_ENTRY("pam_openkubus.so");
 #endif

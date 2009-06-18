@@ -12,6 +12,8 @@
 #define VID 0x0400
 #define PID 0xc35d
 
+#define SEED_LEN 46
+
 char *PROGNAME;
 
 void usage(void);
@@ -107,9 +109,9 @@ int main (int argc, char **argv)
     exit(1);
   }
 
-  if(strlen(password) != 46)
+  if(strlen(password) != SEED_LEN)
   {
-    fprintf(stderr, "Password must have 46 characters. (password omitted: %d)\n\n", strlen(password));
+    fprintf(stderr, "Password must have %d characters. (password omitted: %d)\n\n", SEED_LEN, strlen(password));
     usage();
     exit(1);
   }
@@ -145,9 +147,9 @@ int main (int argc, char **argv)
   }
   
   // key
-  eeprom_write(usb_handle, ADDR_KEY,  &password[0], 32);
+  eeprom_write(usb_handle, ADDR_SEED,  password, 46);
   // data
-  eeprom_write(usb_handle, ADDR_DATA, &password[32], 14);
+  //eeprom_write(usb_handle, ADDR_DATA, &password[32], 14);
   // counter
   eeprom_write(usb_handle, ADDR_COUNTER, "\0\0", 2);
   // lock
@@ -167,7 +169,11 @@ void usage(void)
   fprintf(stderr, "USB-vendor requests will be used to send the password to the stick.\n");
   fprintf(stderr, "Attention: run this script as root!\n\n");
 
+<<<<<<< .mine
+  fprintf(stderr, "-p password: password (must have %d characters)\n", SEED_LEN);
+=======
   fprintf(stderr, "-p password: password (must have 46 characters)\n");
+>>>>>>> .r108
   fprintf(stderr, "-o offset: offset value\n");
   fprintf(stderr, "-d: show debugging information\n");
   fprintf(stderr, "-l: lock stick; stick will then ignore USB-vendor-requests\n");

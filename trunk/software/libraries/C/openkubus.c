@@ -1,80 +1,45 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
-#include <gcrypt.h>
 #include <string.h>
 
 #include "base64.h"
+#include "rijndael.h"
 
 #define BLOCKSIZE 16
 #define KEYSIZE   32
 #define DATASIZE  14
 #define MAXPAD    33
+#define KEYBITS   256
 
-
-// initializes gcrypt
-void crypt_initialize(void)
-{
-  // from: http://www.gnupg.org/documentation/manuals/gcrypt/Initializing-the-library.html#Initializing-the-library
-  /* Version check should be the very first call because it
-  makes sure that important subsystems are intialized. */
-  if (!gcry_check_version (GCRYPT_VERSION))
-  {
-    fputs ("libgcrypt version mismatch\n", stderr);
-    exit (2);
-  }
-     
-  /* We don't want to see any warnings, e.g. because we have not yet
-  parsed program options which might be used to suppress such
-  warnings. */
-  gcry_control(GCRYCTL_SUSPEND_SECMEM_WARN);
-     
-  /* ... If required, other initialization goes here.  Note that the
-  process might still be running with increased privileges and that
-  the secure memory has not been intialized.  */
-  
-  /* Allocate a pool of 16k secure memory.  This make the secure memory
-  available and also drops privileges where needed.  */
-  gcry_control(GCRYCTL_INIT_SECMEM, 16384, 0);
-     
-  /* It is now okay to let Libgcrypt complain when there was/is
-  a problem with the secure memory. */
-  gcry_control(GCRYCTL_RESUME_SECMEM_WARN);
-     
-  /* ... If required, other initialization goes here.  */
-     
-  /* Tell Libgcrypt that initialization has completed. */
-  gcry_control(GCRYCTL_INITIALIZATION_FINISHED, 0);
-}
 
 // uses gcrypt to encrypt 16-byte to a crypted block (SHA256) with given key
-char *encrypt(char *in, char *out, const char *key)
+unsigned char *encrypt(unsigned char *ciphertext, const unsigned char *plaintext, const unsigned char *key)
 {
-  gcry_cipher_hd_t hd;
+  unsigned long rk[RKLENGTH(KEYBITS)];
 
-  if (!gcry_control (GCRYCTL_INITIALIZATION_FINISHED_P))
-    crypt_initialize();
+  int nrounds = rijndaelSetupEncrypt(rk, key, KEYBITS);
 
-  gcry_cipher_open(&hd, GCRY_CIPHER_RIJNDAEL256, GCRY_CIPHER_MODE_ECB, 0);
-  gcry_cipher_setkey(hd, key, KEYSIZE);
-  gcry_cipher_encrypt(hd, out, 32, in, 16);
-  gcry_cipher_close(hd);
+  rijndaelEncrypt(rk, nrounds, ciphertext, plaintext);
 
-  return out;
+  return ciphertext;
 }
 
 // uses gcrypt to decrypt a crypted block (SHA256) with given key
-char *decrypt(char *crypted, const char *key)
+unsigned char *decrypt(unsigned char *crypted, const unsigned char *key)
 {
-  gcry_cipher_hd_t hd;
+  unsigned long rk[RKLENGTH(KEYBITS)];
+  unsigned char plain[BLOCKSIZE];
 
-  if (!gcry_control (GCRYCTL_INITIALIZATION_FINISHED_P))
-    crypt_initialize();
+  int nrounds = rijndaelSetupDecrypt(rk, key, KEYBITS);
 
-  gcry_cipher_open(&hd, GCRY_CIPHER_RIJNDAEL256, GCRY_CIPHER_MODE_ECB, 0);
-  gcry_cipher_setkey(hd, key, KEYSIZE);
-  gcry_cipher_decrypt(hd, crypted, BLOCKSIZE, NULL, 0);
-  gcry_cipher_close(hd);
+  rijndaelDecrypt(rk, nrounds, crypted, plain);
+
+  int i;
+  for(i = 0; i < 16; i++)
+    crypted[i] = plain[i];
+
+  crypted[i] = '\0';
 
   return crypted;
 }
@@ -146,7 +111,8 @@ void openkubus_gen_pad(const char *pw, uint16_t offset, uint16_t num, char *pad)
     aes[i] = pw[i];
   aes[32] = 0;
 
-  encrypt(data, crypted, aes);
+  encrypt((unsigned char *)data, (unsigned char *)crypted, (unsigned char *)aes);
+  crypted[33] = 0;
 
   pad[0] = 'z';
   i = raw_to_base64(crypted, 16, &pad[1], 60);
@@ -187,7 +153,7 @@ int32_t openkubus_authenticate(const char *pad, const char *pw, uint16_t offset,
   if(base64_to_raw_inplace(str, len) != BLOCKSIZE)
     return -5;
 
-  plain = decrypt(str, key);
+  plain = (char *)decrypt((unsigned char *)str, (unsigned char *)key);
 
   k  =  (uint8_t)  plain[0];
   k |= ((uint16_t) plain[1] << 8);

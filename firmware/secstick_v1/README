@@ -1,0 +1,44 @@
+Description:
+  This file contains the firmware for the usbprog version of the OpenKubus
+  stick. It also a USB stack for the USBN960x: usbn2mc
+  For detail information on the hardware (Rev. 1), have a look at the boards/
+  directory. 
+
+  
+Compiling:
+  You will need the GNU tool chain for AVR microcontrollers and make. If you
+  use a linux distributions, check out if there are binary packages available.
+  (For Debian and Ubuntu users: You will need to install avr-libc, avrdude,
+  binutils-avr, gcc-avr and make)
+
+  Before you try to compile the firmware, make sure you have already compiled
+  the crypto-lib. If you haven't, go to ../crypto-lib/ and type make to compile
+  it.
+
+  > make
+  should now compile your firmware. If compiling was successfull, there should
+  be a file "openkubus.bin" in your directory.
+
+
+Flashing:
+  There are two ways to copy the binary from your PC to the microcontroller:
+    i)  If you want to flash the firmware to a usbprog, a simple
+        > usprog_download:
+        should flash the firmware
+    ii) If you don't use the usbprog version, you'll need a programmer like
+        Atmel mk2 or usbprog. First, set the right fuses:
+        > make fuse
+        Afterwards, you should be able to flash the firmware:
+        > make download
+
+
+Lockbits:
+  If you do not whish that you or someone else can read or write the FLASH or
+  EEPROM of the stick with a programmer anymore, use:
+  > make lockbits
+  Warning: You will still be able to configure the stick, but you will no
+  longer be able to modify the firmware in any way. Be carefull!
+
+From here:
+  Your hardware is ready and waits to be initialized. Have a look at
+  firmware/initialize for further information.

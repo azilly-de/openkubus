@@ -7,18 +7,18 @@
 #define PE6 6
 
 #include "base64.h"
-#include "../../addresses.h"
+#include "../addresses.h"
 #include "eeprom.h"
 
-#include "../../crypto-lib/aes.h"
-#include "../../crypto-lib/aes256_dec.h"
-#include "../../crypto-lib/aes256_enc.h"
-#include "../../crypto-lib/aes_dec.h"
-#include "../../crypto-lib/aes_enc.h"
-#include "../../crypto-lib/aes_invsbox.h"
-#include "../../crypto-lib/aes_keyschedule.h"
-#include "../../crypto-lib/aes_sbox.h"
-#include "../../crypto-lib/gf256mul.h"
+#include "../crypto-lib/aes.h"
+#include "../crypto-lib/aes256_dec.h"
+#include "../crypto-lib/aes256_enc.h"
+#include "../crypto-lib/aes_dec.h"
+#include "../crypto-lib/aes_enc.h"
+#include "../crypto-lib/aes_invsbox.h"
+#include "../crypto-lib/aes_keyschedule.h"
+#include "../crypto-lib/aes_sbox.h"
+#include "../crypto-lib/gf256mul.h"
 
 volatile uint8_t send = 0;
 volatile char *tosend;

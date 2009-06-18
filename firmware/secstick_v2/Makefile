@@ -128,14 +128,14 @@ SRC = $(TARGET).c                                               \
 	  fifo.c                                                      \
 		eeprom.c                                                    \
 		base64.c                                                    \
-	  $(LUFA_PATH)/LUFA/Scheduler/Scheduler.c                     \
-	  $(LUFA_PATH)/LUFA/Drivers/USB/LowLevel/LowLevel.c           \
-	  $(LUFA_PATH)/LUFA/Drivers/USB/LowLevel/Endpoint.c           \
-	  $(LUFA_PATH)/LUFA/Drivers/USB/LowLevel/DevChapter9.c        \
-	  $(LUFA_PATH)/LUFA/Drivers/USB/HighLevel/USBTask.c           \
-	  $(LUFA_PATH)/LUFA/Drivers/USB/HighLevel/USBInterrupt.c      \
-	  $(LUFA_PATH)/LUFA/Drivers/USB/HighLevel/Events.c            \
-	  $(LUFA_PATH)/LUFA/Drivers/USB/HighLevel/StdDescriptors.c    \
+	  LUFA/Scheduler/Scheduler.c                     \
+	  LUFA/Drivers/USB/LowLevel/LowLevel.c           \
+	  LUFA/Drivers/USB/LowLevel/Endpoint.c           \
+	  LUFA/Drivers/USB/LowLevel/DevChapter9.c        \
+	  LUFA/Drivers/USB/HighLevel/USBTask.c           \
+	  LUFA/Drivers/USB/HighLevel/USBInterrupt.c      \
+	  LUFA/Drivers/USB/HighLevel/Events.c            \
+	  LUFA/Drivers/USB/HighLevel/StdDescriptors.c    \
 
 
 # List C++ source files here. (C dependencies are automatically generated.)
@@ -434,7 +434,7 @@ MSG_CREATING_LIBRARY = Creating library:
 
 
 # Define all object files.
-OBJ = $(SRC:%.c=$(OBJDIR)/%.o) $(CPPSRC:%.cpp=$(OBJDIR)/%.o) $(ASRC:%.S=$(OBJDIR)/%.o) ../../crypto-lib/bin/aes256_dec.o ../../crypto-lib/bin/aes_dec.o ../../crypto-lib/bin/aes_invsbox.o ../../crypto-lib/bin/aes_sbox.o ../../crypto-lib/bin/aes256_enc.o ../../crypto-lib/bin/aes_enc.o ../../crypto-lib/bin/aes_keyschedule.o ../../crypto-lib/bin/gf256mul.o
+OBJ = $(SRC:%.c=$(OBJDIR)/%.o) $(CPPSRC:%.cpp=$(OBJDIR)/%.o) $(ASRC:%.S=$(OBJDIR)/%.o) ../crypto-lib/bin/aes256_dec.o ../crypto-lib/bin/aes_dec.o ../crypto-lib/bin/aes_invsbox.o ../crypto-lib/bin/aes_sbox.o ../crypto-lib/bin/aes256_enc.o ../crypto-lib/bin/aes_enc.o ../crypto-lib/bin/aes_keyschedule.o ../crypto-lib/bin/gf256mul.o
 
 # Define all listing files.
 LST = $(SRC:%.c=$(OBJDIR)/%.lst) $(CPPSRC:%.cpp=$(OBJDIR)/%.lst) $(ASRC:%.S=$(OBJDIR)/%.lst) 

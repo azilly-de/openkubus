@@ -73,7 +73,7 @@ int main(void)
 
       aes256_ctx_t ctx;
       char out[31];
-      char seed[47];//XXX = "udeip9ruc;aequ\"ahphoongeiNaef6Garoz0JeS2ko-uZe";
+      char seed[47];
       char data[16];
       char counter[2];
       uint16_t n;

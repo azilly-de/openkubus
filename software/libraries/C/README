@@ -1,0 +1,13 @@
+Description:
+  This is the OpenKubus library that runs on your computer. It gives you a
+  simple function to validate one-time-passwords:
+  
+  int openkubus_authenticate(const char *pad, const char *pw, int offset, int num);
+
+  const char *pad:  one-time-password, you want to check
+  const char *pw:   initial-password (or seed)
+  int offset:       offset
+  int num:          sequence number
+
+  You'll find further information to the concept and architecture of OpenKubus
+  on the project's website at http://code.google.com/p/openkubus/.

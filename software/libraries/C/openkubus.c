@@ -1,5 +1,22 @@
+/*
+ * (c) 2009, Benedikt Sauter, Michael Hartmann
+ * original taken from usbprog source
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+
 #include <stdio.h>
-#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -13,7 +30,6 @@
 #define KEYBITS   256
 
 
-// uses gcrypt to encrypt 16-byte to a crypted block (SHA256) with given key
 unsigned char *encrypt(unsigned char *ciphertext, unsigned char *plaintext, const unsigned char *key)
 {
   unsigned long rk[RKLENGTH(KEYBITS)];
@@ -25,7 +41,6 @@ unsigned char *encrypt(unsigned char *ciphertext, unsigned char *plaintext, cons
   return ciphertext;
 }
 
-// uses gcrypt to decrypt a crypted block (SHA256) with given key
 unsigned char *decrypt(unsigned char *crypted, const unsigned char *key)
 {
   unsigned long rk[RKLENGTH(KEYBITS)];
@@ -120,7 +135,7 @@ void openkubus_gen_pad(const char *pw, int offset, int num, char *pad)
   base642pad(pad);
 }
 
-int openkubus_authenticate(const char *pad, const char *pw, uint16_t offset, uint16_t num)
+int openkubus_authenticate(const char *pad, const char *pw, int offset, int num)
 {
   char *plain = NULL;
   int len;

@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "openkubus.h"
+#include "../openkubus.h"
 
 #define PASSWD_FILE "test.txt"
 #define BUFFER 500

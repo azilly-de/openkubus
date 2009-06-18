@@ -1,0 +1,12 @@
+Description:
+  This tool writes the initial password (you may think of it as a seed) to the
+  stick. For further information have a look at 
+  > ./stick-write -h
+  Make sure that the firmware is already flashed on your stick. If you haven't
+  done so yet, go to firmware/secstick_v1 or firmware/secstick_v2 (according to
+  your hardware).
+
+Compiling:
+  To compile the program, you'll need gcc, make and libusb development files.
+  To compile it, just run:
+  > make

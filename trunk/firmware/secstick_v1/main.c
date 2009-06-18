@@ -186,7 +186,7 @@ void USBNDecodeVendorRequest(DeviceRequest *req)
     uint8_t lock;
     eeprom_read(ADDR_LOCK, &lock, 1);
 
-    //if(lock != 0 && lock != 255) return;
+    if(lock != 0 && lock != 255) return;
 
     uint8_t addr  = req->wValue >> 8;
     uint8_t value = (uint8_t) req->wValue;

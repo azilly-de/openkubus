@@ -8,6 +8,7 @@
 
 #include "base64.h"
 #include "../addresses.h"
+#include "../common.h"
 #include "eeprom.h"
 
 #include "../crypto-lib/aes.h"
@@ -19,6 +20,8 @@
 #include "../crypto-lib/aes_keyschedule.h"
 #include "../crypto-lib/aes_sbox.h"
 #include "../crypto-lib/gf256mul.h"
+
+//#define DEBUG
 
 void sleep(uint16_t i)
 {
@@ -88,7 +91,11 @@ int main(void)
 
     _delay_us(100);
 
+#ifdef DEBUG
+    if ((PINE & (1 << PE6)))
+#else
     if (!(PINE & (1 << PE6)))
+#endif
     {
       aes256_ctx_t ctx;
       char out[31];
@@ -126,6 +133,11 @@ int main(void)
       SendString("z");
       raw_to_base64(data, 16, out, 30);
       SendString(out);
+
+#ifdef DEBUG
+      SendString("\n");
+      sleep(500);
+#endif
 
       // wait 500ms
       sleep(500);
@@ -241,10 +253,10 @@ EVENT_HANDLER(USB_UnhandledControlPacket)
       lock = l;
 
       uint16_t wValue  = Endpoint_Read_Word_LE();
-      uint16_t wLength = Endpoint_Read_Word_LE();
+      //uint16_t wLength = Endpoint_Read_Word_LE();
 
       uint8_t addr  = wValue >> 8;
-      uint8_t value = (uint8_t) wValue;
+      char value = wValue;
 
       Endpoint_ClearSetupReceived();
 
@@ -424,6 +436,7 @@ void CreateKeyboardReport(USB_KeyboardReport_Data_t* ReportData)
     else
     {
       tosend++;
+      char2usb(&data, &modifier);
 
       /*
       ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
@@ -432,28 +445,6 @@ void CreateKeyboardReport(USB_KeyboardReport_Data_t* ReportData)
         if(count)
           data    = fifo_get_wait(&outFIFO);
       }*/
-
-      switch(data)
-      {
-        case 0:   break;
-        case ' ': data = 0x2C; break;
-        case '-': data = 0x2d; break;
-        case '0': data = 0x27; break;
-        case '/': data = 0x2C; break;
-        case '=': data = 0x37; break; // = => 3
-        case '+': data = 0x38; break; // = => 3
-
-        default:
-          if(data <= 'Z' && data >= 'A')
-          {
-            modifier = 1 << 5; // right shift
-            data = data - 65 + 0x04;
-          }
-          else if(data <= 'z' && data >= 'a')
-            data = data - 97 + 0x04;
-          else if(data >= '1' && data <= '9')
-            data = data - 49 + 0x1E; // 49: '1'
-      }
     }
   }
 

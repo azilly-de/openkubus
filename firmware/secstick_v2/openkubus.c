@@ -54,7 +54,8 @@ uint16_t IdleMSRemaining = 0;
  */
 int main(void)
 {
-  DDRB |= (1 << PB4);
+  DDRB = (1 << PB4);
+  PORTB = 0;
   DDRE = 0;
   PORTE = 0;
 
@@ -71,12 +72,22 @@ int main(void)
 	/* Initialize USB Subsystem */
 	USB_Init();
 	
+  uint16_t i = 0;
   while(1)
   {
+    // blink
+    if(i++ == 10000)
+      PORTB |= (1 << PB4);  //on
+    else if(i == 20000)
+    {
+      PORTB &= ~(1 << PB4); //off
+      i = 0;
+    }
+
+    _delay_us(100);
+
     if (!(PINE & (1 << PE6)))
     {
-      PORTB ^= (1 << PB4);
-
       aes256_ctx_t ctx;
       char out[31];
       char seed[49];
@@ -120,6 +131,12 @@ int main(void)
   }
 }
 
+/* this is a bit unclean:
+ * Q: Why do we use a global flag (volatile) flag instead of a clean FIFO?
+ * A: This saves RAM, because no string has to be copied into a FIFO! The
+ *    atmega16u4 has 1,25kB RAM, so RAM should be no problem. But this firmware
+ *    was originally written for the at90usb162 with only 512 bytes of RAM.
+ */
 void SendString(char *str)
 {
   // wait untill send == 0

@@ -25,9 +25,11 @@ Compiling:
 
 
 Flashing:
-  At this point, you are on your own.
+  If you have the right fuses
+  > make download
+  should flash the firmware into the microcontroller.
 
 
 From here:
   Your hardware is ready and waits to be initialized. Have a look at
-  firmware/initialize for further information.
+  firmware/INITIALIZE for further information.

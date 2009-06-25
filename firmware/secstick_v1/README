@@ -41,4 +41,4 @@ Lockbits:
 
 From here:
   Your hardware is ready and waits to be initialized. Have a look at
-  firmware/initialize for further information.
+  firmware/INITIALIZE for further information.

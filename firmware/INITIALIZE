@@ -1,0 +1,13 @@
+Firmware:
+  Make sure your hardware is already working and you have successfully flashed
+  the firmware into the microcontroller. If you haven't done so yet, please do so
+  and go to firmware/secstick_v1 or firmware/secstick_v2 (according to your
+  firmware) and follow the instructions in README.
+
+Description:
+  The firmware is on your stick, but you still have to "personalize" it, get
+  your own password on it. This password is like a seed, it will be used to
+  generate the one time passwords. So make sure, nobody sees this password.
+
+  At the moment there is only a simple command-line tool available to write a
+  password to your stick. Have a look at firmware/create-stick/.

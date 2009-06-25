@@ -10,3 +10,16 @@ Compiling:
   To compile the program, you'll need gcc, make and libusb development files.
   To compile it, just run:
   > make
+
+Locking:
+  If you run ./stick-write with the parameter -l your stick will be locked,
+  i.e. you will no longer be able to write new passwords to the stick via USB.
+  But you will still be able to reset the stick. Just erase the EEPROM (e.g. by
+  flashing the firmware again) and your stick will be unlocked. This lock only
+  prevents other computers (by accident or on purpose) to overwrite your
+  password on the stick. So you should lock you stick once everything works.
+
+Lock-Bits:
+  If you want a stronger lock mechanism, have a look at the lock bits of the
+  Atmega16u4. It is possible to prohibit every external reading and writing to
+  the mc's flash and EEPROM. But make sure, the simple USB-lock is also set.

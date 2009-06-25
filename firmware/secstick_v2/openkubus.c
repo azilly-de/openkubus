@@ -20,6 +20,12 @@
 #include "../crypto-lib/aes_sbox.h"
 #include "../crypto-lib/gf256mul.h"
 
+void sleep(uint16_t i)
+{
+  while(i--)
+    _delay_ms(1);
+}
+
 volatile uint8_t send = 0;
 volatile char *tosend;
 
@@ -73,14 +79,14 @@ int main(void)
 
       aes256_ctx_t ctx;
       char out[31];
-      char seed[47];
+      char seed[49];
       char data[16];
       char counter[2];
       uint16_t n;
       uint8_t i;
 
       // read_into_ram:
-      eeprom_read(ADDR_SEED, seed, 46);
+      eeprom_read(ADDR_SEED, seed, 48);
 
       // increase counter
       eeprom_read(ADDR_COUNTER, counter, 2);
@@ -108,9 +114,8 @@ int main(void)
       raw_to_base64(data, 16, out, 30);
       SendString(out);
 
-      _delay_ms(200);
-      _delay_ms(200);
-      _delay_ms(100);
+      // wait 500ms
+      sleep(500);
     }
   }
 }
@@ -217,17 +222,17 @@ EVENT_HANDLER(USB_UnhandledControlPacket)
       lock = l;
       //if(lock != 0 && lock != 255) return;
 
-      uint16_t wLength = Endpoint_Read_Word_LE();
       uint16_t wValue  = Endpoint_Read_Word_LE();
+      uint16_t wLength = Endpoint_Read_Word_LE();
 
       uint8_t addr  = wValue >> 8;
       uint8_t value = (uint8_t) wValue;
 
-			Endpoint_ClearSetupReceived();
-			
-			// Acknowledge status stage
-			while (!(Endpoint_IsSetupINReady()));
-			Endpoint_ClearSetupIN();
+      Endpoint_ClearSetupReceived();
+
+      // Acknowledge status stage
+      while (!(Endpoint_IsSetupINReady()));
+      Endpoint_ClearSetupIN();
 
       eeprom_write(addr, &value, 1);
     }

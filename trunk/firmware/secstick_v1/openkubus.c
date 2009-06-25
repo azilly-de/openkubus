@@ -28,6 +28,7 @@
 
 #include "openkubus.h"
 #include "../addresses.h"
+#include "../common.h"
 #include "base64.h"
 #include "eeprom.h"
 #include "usbn2mc.h"
@@ -284,26 +285,8 @@ void usbWriteChar(char *str)
     char modifier = 0;
     char hex = *str++;
    
-    switch(hex)
-    {
-      case ' ': hex = 0x2C; break;
-      case '-': hex = 0x2d; break;
-      case '0': hex = 0x27; break;
-      case '/': modifier = 1 << 5; hex = 0x1E; break;
-      case '=': hex = 0x37; break; // = => 3
-      case '+': hex = 0x38; break; // = => 3
-   
-      default:
-        if(hex <= 'Z' && hex >= 'A')
-        {
-          modifier = 1 << 5; // right shift
-          hex = hex - 65 + 0x04;
-        }
-        else if(hex <= 'z' && hex >= 'a')
-          hex = hex - 97 + 0x04;
-        else if(hex >= '1' && hex <= '9')
-          hex = hex - 49 + 0x1E; // 49: '1'
-    }
+    // converts ASCII char in hex to USB-keycode and sets modifiers
+    char2usb(&hex, &modifier);
 
     usbHIDWrite(modifier, hex);
     _delay_ms(11);

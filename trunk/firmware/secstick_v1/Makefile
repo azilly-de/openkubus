@@ -53,7 +53,7 @@ TARGET = openkubus
 
 
 # List C source files here. (C dependencies are automatically generated.)
-SRC = $(TARGET).c usbn960x.c usbn2mc.c usbnapi.c eeprom.c base64.c
+SRC = $(TARGET).c usbn960x.c usbn2mc.c usbnapi.c eeprom.c base64.c ../common.c
 
 
 # List Assembler source files here.

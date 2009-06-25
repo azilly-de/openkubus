@@ -123,11 +123,12 @@ LUFA_PATH = ../
 
 
 # List C source files here. (C dependencies are automatically generated.)
-SRC = $(TARGET).c                                               \
-	  Descriptors.c                                               \
-	  fifo.c                                                      \
-		eeprom.c                                                    \
-		base64.c                                                    \
+SRC = $(TARGET).c                                  \
+	  Descriptors.c                                  \
+	  fifo.c                                         \
+		eeprom.c                                       \
+		base64.c                                       \
+		../common.c                                    \
 	  LUFA/Scheduler/Scheduler.c                     \
 	  LUFA/Drivers/USB/LowLevel/LowLevel.c           \
 	  LUFA/Drivers/USB/LowLevel/Endpoint.c           \

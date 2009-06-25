@@ -136,7 +136,7 @@ USB_Descriptor_Configuration_t PROGMEM ConfigurationDescriptor =
 			InterfaceNumber:        0x00,
 			AlternateSetting:       0x00,
 			
-			TotalEndpoints:         4,
+			TotalEndpoints:         2,
 				
 			Class:                  0x03,
 			SubClass:               0x01,
@@ -163,7 +163,7 @@ USB_Descriptor_Configuration_t PROGMEM ConfigurationDescriptor =
 			EndpointAddress:        (ENDPOINT_DESCRIPTOR_DIR_IN | KEYBOARD_EPNUM),
 			Attributes:             EP_TYPE_INTERRUPT,
 			EndpointSize:           KEYBOARD_EPSIZE,
-			PollingIntervalMS:      0x04
+			PollingIntervalMS:      0x02
 		},
 
 	KeyboardLEDsEndpoint:
@@ -173,7 +173,7 @@ USB_Descriptor_Configuration_t PROGMEM ConfigurationDescriptor =
 			EndpointAddress:        (ENDPOINT_DESCRIPTOR_DIR_OUT | KEYBOARD_LEDS_EPNUM),
 			Attributes:             EP_TYPE_INTERRUPT,
 			EndpointSize:           KEYBOARD_EPSIZE,
-			PollingIntervalMS:      0x04
+			PollingIntervalMS:      0x02
 		},
 
 	DataInEndpoint:

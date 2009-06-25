@@ -63,6 +63,8 @@ int main(void)
 	MCUSR &= ~(1 << WDRF);
 	wdt_disable();
 
+  asm("nop");
+
 	/* Disable clock division */
 	//clock_prescale_set(clock_div_1);
 	
@@ -237,7 +239,6 @@ EVENT_HANDLER(USB_UnhandledControlPacket)
       eeprom_read(ADDR_LOCK, &l, 1);
 
       lock = l;
-      //if(lock != 0 && lock != 255) return;
 
       uint16_t wValue  = Endpoint_Read_Word_LE();
       uint16_t wLength = Endpoint_Read_Word_LE();
@@ -251,7 +252,9 @@ EVENT_HANDLER(USB_UnhandledControlPacket)
       while (!(Endpoint_IsSetupINReady()));
       Endpoint_ClearSetupIN();
 
-      eeprom_write(addr, &value, 1);
+      // if stick is _not_ locked
+      if(lock == 0 || lock == 255)
+        eeprom_write(addr, &value, 1);
     }
     /*
     else if(bRequest == USB_CHANGE_KEY)

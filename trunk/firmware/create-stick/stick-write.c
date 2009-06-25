@@ -74,7 +74,7 @@ int main (int argc, char **argv)
 {
   struct usb_dev_handle *usb_handle = easyAVR_Open ();
   int lflag = 0, hflag = 0, dflag = 0;
-  int offset;
+  char offset[] = "\0\0";
   char *password   = NULL;
   char *offset_arg = NULL;
   char *endptr;
@@ -116,25 +116,28 @@ int main (int argc, char **argv)
     exit(1);
   }
 
-  offset = 0;
   if(offset_arg != NULL)
   {
-    offset = strtol(offset_arg, &endptr, 10);
+    int o = 0;
+    o = strtol(offset_arg, &endptr, 10);
 
     // see: $ man strtol
-    if((errno == ERANGE && (offset == LONG_MAX || offset == LONG_MIN)) || (errno != 0 && offset == 0) || endptr == offset_arg)
+    if((errno == ERANGE && (o == LONG_MAX || o == LONG_MIN)) || (errno != 0 && o == 0) || endptr == offset_arg)
     {
       fprintf(stderr, "Converting offset argument to integer failed.\n\n");
       usage();
       exit(1);
     }
 
-    if(offset < 0 || offset > 65536)
+    if(o < 0 || o > 65536)
     {
       fprintf(stderr, "offset in wrong range.\n\n");
       usage();
       exit(1);
     }
+
+    offset[0] = o % 256;
+    offset[1] = o / 256;
   }
  
   if(dflag)
@@ -148,10 +151,8 @@ int main (int argc, char **argv)
   
   // key
   eeprom_write(usb_handle, ADDR_SEED,  password, 46);
-  // data
-  //eeprom_write(usb_handle, ADDR_DATA, &password[32], 14);
   // counter
-  eeprom_write(usb_handle, ADDR_COUNTER, "\0\0", 2);
+  eeprom_write(usb_handle, ADDR_COUNTER, offset, 2);
   // lock
   if(lflag)
     eeprom_write(usb_handle, ADDR_LOCK, "l", 1);
@@ -169,11 +170,7 @@ void usage(void)
   fprintf(stderr, "USB-vendor requests will be used to send the password to the stick.\n");
   fprintf(stderr, "Attention: run this script as root!\n\n");
 
-<<<<<<< .mine
   fprintf(stderr, "-p password: password (must have %d characters)\n", SEED_LEN);
-=======
-  fprintf(stderr, "-p password: password (must have 46 characters)\n");
->>>>>>> .r108
   fprintf(stderr, "-o offset: offset value\n");
   fprintf(stderr, "-d: show debugging information\n");
   fprintf(stderr, "-l: lock stick; stick will then ignore USB-vendor-requests\n");

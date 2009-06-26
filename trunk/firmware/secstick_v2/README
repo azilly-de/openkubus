@@ -25,9 +25,10 @@ Compiling:
 
 
 Flashing:
-  If you have the right fuses
+  First, set the right fuses:
+  > make fuses
+  and then you can flash the firmware into the microcontroller:
   > make download
-  should flash the firmware into the microcontroller.
 
 
 From here:

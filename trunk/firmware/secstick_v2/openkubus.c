@@ -66,8 +66,6 @@ int main(void)
 	MCUSR &= ~(1 << WDRF);
 	wdt_disable();
 
-  asm("nop");
-
 	/* Disable clock division */
 	//clock_prescale_set(clock_div_1);
 	
@@ -242,6 +240,50 @@ EVENT_HANDLER(USB_ConfigurationChanged)
  */
 EVENT_HANDLER(USB_UnhandledControlPacket)
 {
+  if (bmRequestType == (REQDIR_DEVICETOHOST | REQTYPE_VENDOR | REQREC_DEVICE))
+  {
+    if(bRequest == USB_GET_COMPANY || bRequest == USB_GET_ID || bRequest == USB_GET_OWNER || bRequest == USB_GET_TIMESTAMP)
+    {
+				Endpoint_ClearSetupReceived();
+				
+        if(bRequest == USB_GET_COMPANY)
+        {
+          char response[LEN_COMPANY];
+          memset(response, 0, LEN_COMPANY);
+          eeprom_read(ADDR_COMPANY, response, LEN_COMPANY);
+          Endpoint_Write_Control_Stream_LE(response, LEN_COMPANY);
+        }
+        else if(bRequest == USB_GET_ID)
+        {
+          char response[LEN_ID];
+          memset(response, 0, LEN_ID);
+          eeprom_read(ADDR_ID, response, LEN_ID);
+          Endpoint_Write_Control_Stream_LE(response, LEN_ID);
+        }
+        else if(bRequest == USB_GET_OWNER)
+        {
+          char response[LEN_OWNER];
+          memset(response, 0, LEN_OWNER);
+          eeprom_read(ADDR_OWNER, response, LEN_OWNER);
+          Endpoint_Write_Control_Stream_LE(response, LEN_OWNER);
+        }
+        else if(bRequest == USB_GET_TIMESTAMP)
+        {
+          char response[LEN_TIMESTAMP];
+          memset(response, 0, LEN_TIMESTAMP);
+          eeprom_read(ADDR_TIMESTAMP, response, LEN_TIMESTAMP);
+          Endpoint_Write_Control_Stream_LE(response, LEN_TIMESTAMP);
+        }
+				
+				// Send the flag to the host
+				Endpoint_ClearSetupIN();
+
+				// Acknowledge status stage
+				while (!(Endpoint_IsSetupOUTReceived()));
+				Endpoint_ClearSetupOUT();
+    }
+  }
+
   if (bmRequestType == (REQDIR_HOSTTODEVICE | REQTYPE_VENDOR | REQREC_DEVICE))
   {
     if(bRequest == USB_WRITE_EEPROM)

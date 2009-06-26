@@ -4,6 +4,7 @@
 #include <string.h> 
 #include <unistd.h>
 #include <errno.h>
+#include <time.h>
 #include <usb.h>
 
 #include "../addresses.h"
@@ -12,10 +13,9 @@
 #define VID 0x0400
 #define PID 0xc35d
 
-#define SEED_LEN 46
-
 char *PROGNAME;
 
+int strtoi(char *str);
 void usage(void);
 
 struct usb_dev_handle *easyAVR_Open ()
@@ -75,16 +75,20 @@ int main (int argc, char **argv)
   struct usb_dev_handle *usb_handle = easyAVR_Open ();
   int lflag = 0, hflag = 0, dflag = 0;
   char offset[] = "\0\0";
-  char *password   = NULL;
-  char *offset_arg = NULL;
-  char *endptr;
+  char *password      = NULL;
+  char *offset_arg    = NULL;
+  char *owner_arg     = NULL;
+  char *company_arg   = NULL;
+  char *timestamp_arg = NULL;
+  char timestamp[4];
+  char *id_arg        = NULL;
   int c;
 
   PROGNAME = argv[0];
 
   opterr = 0;
      
-  while ((c = getopt (argc, argv, "dhlp:o:")) != -1)
+  while ((c = getopt (argc, argv, "dhlp:o:O:C:T:I:")) != -1)
   {
     switch (c)
     {
@@ -93,6 +97,11 @@ int main (int argc, char **argv)
       case 'h': hflag = 1; break;
       case 'p': password   = optarg; break;
       case 'o': offset_arg = optarg; break;
+
+      case 'O': owner_arg     = optarg; break;
+      case 'C': company_arg   = optarg; break;
+      case 'T': timestamp_arg = optarg; break;
+      case 'I': id_arg        = optarg; break;
     }
   }
 
@@ -109,27 +118,24 @@ int main (int argc, char **argv)
     exit(1);
   }
 
-  if(strlen(password) != SEED_LEN)
+  if(strlen(password) != LEN_SEED)
   {
-    fprintf(stderr, "Password must have %d characters. (password omitted: %d)\n\n", SEED_LEN, strlen(password));
+    fprintf(stderr, "Password must have %d characters. (password omitted: %d)\n\n", LEN_SEED, strlen(password));
     usage();
     exit(1);
   }
 
   if(offset_arg != NULL)
   {
-    int o = 0;
-    o = strtol(offset_arg, &endptr, 10);
+    int o = strtoi(offset_arg);
 
-    // see: $ man strtol
-    if((errno == ERANGE && (o == LONG_MAX || o == LONG_MIN)) || (errno != 0 && o == 0) || endptr == offset_arg)
+    if(o < 0)
     {
-      fprintf(stderr, "Converting offset argument to integer failed.\n\n");
+      fprintf(stderr, "offset must be a positive number.\n\n");
       usage();
       exit(1);
     }
-
-    if(o < 0 || o > 65536)
+    else if(o < 0 || o > 65536)
     {
       fprintf(stderr, "offset in wrong range.\n\n");
       usage();
@@ -149,10 +155,74 @@ int main (int argc, char **argv)
     exit(4);
   }
   
+  if(owner_arg != NULL)
+  {
+    int len = strlen(owner_arg);
+
+    if(len > LEN_OWNER-1)
+    {
+      fprintf(stderr, "argument for owner mustn't be longer than %d characters.\n\n", LEN_OWNER-1);
+      usage();
+      exit(1);
+    }
+  }
+
+  if(company_arg != NULL)
+  {
+    int len = strlen(company_arg);
+
+    if(len > LEN_COMPANY-1)
+    {
+      fprintf(stderr, "argument for company mustn't be longer than %d characters.\n\n", LEN_COMPANY-1);
+      usage();
+      exit(1);
+    }
+  }
+
+  {
+    int t = time(NULL);
+
+    if(timestamp_arg != NULL)
+    {
+      t = strtoi(timestamp_arg);
+
+      if(t <= 0)
+      {
+        fprintf(stderr, "argument for timestamp must be a positive number.\n\n");
+        usage();
+        exit(1);
+      }
+      else if(t > 2147483647)
+      {
+        fprintf(stderr, "argument for timestamp mustn't be larger than 2147483647.\n\n");
+        usage();
+        exit(1);
+      }
+    }
+
+    timestamp[0] =  t           % 256;
+    timestamp[1] = (t/     256) % 256;
+    timestamp[2] = (t/   65536) % 256;
+    timestamp[3] = (t/16777216) % 256;
+  }
+
+  // owner
+  if(owner_arg != NULL)
+    eeprom_write(usb_handle, ADDR_OWNER, owner_arg, strlen(owner_arg)+1);
+
+  // company
+  if(company_arg != NULL)
+    eeprom_write(usb_handle, ADDR_COMPANY, company_arg, strlen(company_arg)+1);
+
+  // timestamp
+  eeprom_write(usb_handle, ADDR_TIMESTAMP, timestamp, LEN_TIMESTAMP);
+
   // key
-  eeprom_write(usb_handle, ADDR_SEED,  password, 46);
+  eeprom_write(usb_handle, ADDR_SEED, password, LEN_SEED);
+
   // counter
   eeprom_write(usb_handle, ADDR_COUNTER, offset, 2);
+
   // lock
   if(lflag)
     eeprom_write(usb_handle, ADDR_LOCK, "l", 1);
@@ -170,9 +240,31 @@ void usage(void)
   fprintf(stderr, "USB-vendor requests will be used to send the password to the stick.\n");
   fprintf(stderr, "Attention: run this script as root!\n\n");
 
-  fprintf(stderr, "-p password: password (must have %d characters)\n", SEED_LEN);
-  fprintf(stderr, "-o offset: offset value\n");
-  fprintf(stderr, "-d: show debugging information\n");
-  fprintf(stderr, "-l: lock stick; stick will then ignore USB-vendor-requests\n");
-  fprintf(stderr, "-h: show this help\n");
+  fprintf(stderr, "required arguments:\n");
+  fprintf(stderr, "  -p password: password (must have %d characters)\n\n", LEN_SEED);
+
+  fprintf(stderr, "useful arguments:\n");
+  fprintf(stderr, "  -o offset: offset value\n");
+  fprintf(stderr, "  -O owner: owner of the stick (max. %d characters)\n", LEN_OWNER-1);
+  fprintf(stderr, "  -C company: company-name (max. %d characters)\n", LEN_COMPANY-1);
+  fprintf(stderr, "  -T timestamp: timestamp (4 bytes)\n");
+  fprintf(stderr, "  -I ID: arbitrary id (4 bytes)\n\n");
+
+  fprintf(stderr, "other arguments:\n");
+  fprintf(stderr, "  -d: show debugging information\n");
+  fprintf(stderr, "  -l: lock stick; stick will then ignore USB-vendor-requests\n");
+  fprintf(stderr, "  -h: show this help\n");
+}
+
+int strtoi(char *str)
+{
+  int o = 0;
+  char *endptr;
+  o = strtol(str, &endptr, 10);
+
+  // see: $ man strtol
+  if((errno == ERANGE && (o == LONG_MAX || o == LONG_MIN)) || (errno != 0 && o == 0) || endptr == str)
+    return -1;
+  else
+    return o;
 }

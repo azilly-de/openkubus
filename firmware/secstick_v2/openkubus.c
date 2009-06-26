@@ -21,8 +21,6 @@
 #include "../crypto-lib/aes_sbox.h"
 #include "../crypto-lib/gf256mul.h"
 
-//#define DEBUG
-
 void sleep(uint16_t i)
 {
   while(i--)

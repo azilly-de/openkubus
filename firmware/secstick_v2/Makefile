@@ -732,3 +732,7 @@ begin finish end sizebefore sizeafter gccversion  \
 build elf hex eep lss sym coff extcoff clean      \
 clean_list clean_binary program debug gdb-config  \
 doxygen dfu flip flip-ee dfu-ee
+
+fuses:
+	avrdude -p m16u4 -c avrispv2 -P usb -B 10 -U lfuse:w:0xC2:m
+	avrdude -p m16u4 -c avrispv2 -P usb -B 10 -U hfuse:w:0x99:m

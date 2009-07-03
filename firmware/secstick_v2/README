@@ -25,7 +25,7 @@ Compiling:
 
 
 Flashing:
-  First, set the right fuses:
+  First, set the right fuses (default fuses: lfuse: 0xC2, hfuse: 0x99):
   > make fuses
   and then you can flash the firmware into the microcontroller:
   > make download

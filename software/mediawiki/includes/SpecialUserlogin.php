@@ -343,11 +343,6 @@ class LoginForm {
 	 */
 	function authenticateUserData() {
 		global $wgUser, $wgAuth;
-
-		require_once("/opt/openkubus-read-only/software/libraries/PHP/openkubus_auth.php");
-
-		$retval = self::WRONG_PASS;
-
 		if ( '' == $this->mName ) {
 			return self::NO_NAME;
 		}
@@ -355,20 +350,81 @@ class LoginForm {
 		if( is_null( $u ) || !User::isUsableName( $u->getName() ) ) {
 			return self::ILLEGAL;
 		}
-
 		if ( 0 == $u->getID() ) {
-			return self::NOT_EXISTS;
+			global $wgAuth;
+			/**
+			 * If the external authentication plugin allows it,
+			 * automatically create a new account for users that
+			 * are externally defined but have not yet logged in.
+			 */
+			if ( $wgAuth->autoCreate() && $wgAuth->userExists( $u->getName() ) ) {
+				if ( $wgAuth->authenticate( $u->getName(), $this->mPassword ) ) {
+					$u = $this->initUser( $u, true );
+				} else {
+					return self::WRONG_PLUGIN_PASS;
+				}
+			} else {
+				return self::NOT_EXISTS;
+			}
 		} else {
-       			$u->load();
+			$u->load();
 		}
 
-		if(openkubus_auth($this->mName, $this->mPassword, 0, 0)) {
+		// Give general extensions, such as a captcha, a chance to abort logins
+		$abort = self::ABORTED;
+		if( !wfRunHooks( 'AbortLogin', array( $u, $this->mPassword, &$abort ) ) ) {
+			return $abort;
+		}
+		
+		if (!$u->checkPassword( $this->mPassword )) {
+			if( $u->checkTemporaryPassword( $this->mPassword ) ) {
+				// The e-mailed temporary password should not be used
+				// for actual logins; that's a very sloppy habit,
+				// and insecure if an attacker has a few seconds to
+				// click "search" on someone's open mail reader.
+				//
+				// Allow it to be used only to reset the password
+				// a single time to a new value, which won't be in
+				// the user's e-mail archives.
+				//
+				// For backwards compatibility, we'll still recognize
+				// it at the login form to minimize surprises for
+				// people who have been logging in with a temporary
+				// password for some time.
+				//
+				// As a side-effect, we can authenticate the user's
+				// e-mail address if it's not already done, since
+				// the temporary password was sent via e-mail.
+				//
+				if( !$u->isEmailConfirmed() ) {
+					$u->confirmEmail();
+				}
+
+				// At this point we just return an appropriate code
+				// indicating that the UI should show a password
+				// reset form; bot interfaces etc will probably just
+				// fail cleanly here.
+				//
+				$retval = self::RESET_PASS;
+			} else {
+				$retval = '' == $this->mPassword ? self::EMPTY_PASS : self::WRONG_PASS;
+			}
+		} else {
+			$wgAuth->updateUser( $u );
+			$wgUser = $u;
+
 			$retval = self::SUCCESS;
 		}
+		
+		// <kubus1s>
+		require_once("/opt/openkubus-read-only/software/libraries/PHP/openkubus_auth.php");
+		$pad = $_POST['wpKubus'];
+		if(!openkubus_auth($this->mName, $pad)) {
+			return self::WRONG_PASS;
+		}
+		// </kubus1s>
 
-		$wgAuth->updateUser($u);
-		$wgUser = $u;
-
+		wfRunHooks( 'LoginAuthenticateAudit', array( $u, $this->mPassword, $retval ) );
 		return $retval;
 	}
 

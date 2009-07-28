@@ -1,0 +1,11 @@
+#!/bin/bash
+
+cd /opt/openkubus-read-only/software/server/
+
+while true
+do
+
+  ./server.pl
+  sleep 10
+done
+

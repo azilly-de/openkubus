@@ -10,8 +10,8 @@
 #include "../addresses.h"
 
 //0400:c35d
-#define VID 0x0400
-#define PID 0xc35d
+#define VID 0x1781
+#define PID 0x0c66
 
 char *PROGNAME;
 

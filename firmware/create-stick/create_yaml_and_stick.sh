@@ -1,16 +1,17 @@
 #!/bin/bash
 
 export passwort=`pwgen 46 1`
+export datei=`echo $datei_`
 
 sudo ./stick-write -p $passwort -O $1
 
-if [ ! -f geheim.yaml ]; 
+if [ ! -f $datei ]; 
 then
-echo "---" >> geheim.yaml
+echo "---" >> $datei
 fi
 
 
-echo "$1:" >> geheim.yaml
-echo "  key: $passwort" >> geheim.yaml
-echo "  number: 0" >> geheim.yaml
-echo "  offset: 0" >> geheim.yaml
+echo "$1:" >> $datei
+echo "  key: $passwort" >> $datei
+echo "  number: 0" >> $datei
+echo "  offset: 0" >> $datei

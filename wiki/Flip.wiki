@@ -28,3 +28,7 @@ http://www.eproo.de/jpg.jpeg
 == Open KUBUS ==
 
 http://www.eproo.de/jpg2.jpeg
+
+== Hinweise ==
+
+Es gibt die Bibliothek LUFA mit welcher viele USB-Dongles vor allem aus der Open-Source Szene entwickelt werden. Die meisten Programme lassen sich mit minimalen Aufwand portieren. Oft findet man auch bei Google viele Projekte für die einzelnen Prozessoren fertig im Internet.

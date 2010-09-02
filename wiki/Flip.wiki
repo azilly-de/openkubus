@@ -7,6 +7,32 @@ Im AT90USBKey oder OpenKUBUS stecken die gleichen Prozesorkerne. Die modernen Mi
 Diese Seite zeigt die wesentlichen Unterschiede. Der AT90USBKey hat einen etwas größeren Prozessor als der OpenKUBUS mit welchem sich wesentlich größere Anwendungen wie z.B. Messgeräte bauen lassen. Für kleine Dongelanwendungen reicht der ATMega16u4 von OpenKUBUS in 99% aller Fälle aus.
 
 
+== Installation FLIP ==
+ * Download von ATMEL Homepage 
+http://www.atmel.com/dyn/products/tools_card.asp?tool_id=3886
+ * Installation Starten
+ * AT90USB Key oder Open KUBUS anstecken
+ * Windows sollte das Gerät erkennen und den Treiber installieren (Notfalls von Hand angeben: C:\Programme\FLIP\usb)
+ * FLIP starten 
+ * Hex Datei Laden
+ * RUN klicken
+ * Start Application
+
+Ab jetzt ist die Software aktiv.
+
+
+== AT90 USB Key ==
+
+http://www.eproo.de/jpg.jpeg
+
+== Open KUBUS ==
+
+http://www.eproo.de/jpg2.jpeg
+
+
+
+
+
 = Details =
 
 Add your content here.  Format your content with:

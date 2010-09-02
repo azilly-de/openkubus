@@ -1,8 +1,10 @@
 #summary One-sentence summary of this page.
 
-= Introduction =
+= Programmierung von AT90USBKey oder OpenKUBUS mit der Software FLIP =
 
-Add your content here.
+Im AT90USBKey oder OpenKUBUS stecken die gleichen Prozesorkerne. Die modernen Mikrocontroller mit USB-Schnittstelle von Atmel kann man einfach mit der Software FLIP programmieren.
+
+Diese Seite zeigt die wesentlichen Unterschiede. Der AT90USBKey hat einen etwas größeren Prozessor als der OpenKUBUS mit welchem sich wesentlich größere Anwendungen wie z.B. Messgeräte bauen lassen. Für kleine Dongelanwendungen reicht der ATMega16u4 von OpenKUBUS in 99% aller Fälle aus.
 
 
 = Details =

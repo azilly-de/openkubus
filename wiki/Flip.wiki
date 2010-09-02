@@ -22,11 +22,11 @@ Ab jetzt ist die Software aktiv.
 
 
 == AT90 USB Key ==
-
+Von Atmel Evaluierungsboard.
 http://www.eproo.de/jpg.jpeg
 
 == Open KUBUS ==
-
+Von embedded projects Evaluierungsboard
 http://www.eproo.de/jpg2.jpeg
 
 == Hinweise ==

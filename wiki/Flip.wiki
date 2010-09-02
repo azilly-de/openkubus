@@ -1,4 +1,4 @@
-#summary One-sentence summary of this page.
+#summary FLIP mit AT90USBKey oder OpenKUBUS
 
 = Programmierung von AT90USBKey oder OpenKUBUS mit der Software FLIP =
 
@@ -28,14 +28,3 @@ http://www.eproo.de/jpg.jpeg
 == Open KUBUS ==
 
 http://www.eproo.de/jpg2.jpeg
-
-
-
-
-
-= Details =
-
-Add your content here.  Format your content with:
-  * Text in *bold* or _italic_
-  * Headings, paragraphs, and lists
-  * Automatic links to other wiki pages

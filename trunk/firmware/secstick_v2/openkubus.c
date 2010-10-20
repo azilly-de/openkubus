@@ -55,10 +55,56 @@ uint16_t IdleMSRemaining = 0;
  */
 int main(void)
 {
+#if defined(__AVR_ATmega16U4__ )
+
   DDRB = (1 << PB4);
   PORTB = 0;
   DDRE = 0;
   PORTE = 0;
+
+  #define PORTLED PORTB
+  #define LED PB4
+
+  #define PORTBUTTON PINE
+  #define BUTTON PE6
+#elif defined(__AVR_AT90USB1287__)
+  DDRD = (1 << PD6);
+  PORTD = 0;
+
+  DDRE = 0;
+  PORTE = 0;
+
+  #define PORTLED PORTD
+  #define LED PD6
+
+  #define PORTBUTTON PINE
+  #define BUTTON PE2
+#elif defined(__AVR_AT90USB646__)
+  DDRD = (1 << PD6);
+  PORTD = 0;
+
+  DDRE = 0;
+  PORTE = 0;
+
+  #define PORTLED PORTD
+  #define LED PD6
+
+  #define PORTBUTTON PINE
+  #define BUTTON PE2
+#elif defined(__AVR_AT90USB162__)
+  DDRD = (1 << PD6);
+  PORTD = 0;
+  DDRD = 0;
+  PORTD = 0;
+
+  #define PORTLED PORTD
+  #define LED PD6
+
+  #define PORTBUTTON PIND
+  #define BUTTON PD7
+#else
+#  error Unsupported MCU type
+#endif
 
 	/* Disable watchdog if enabled by bootloader/fuses */
 	MCUSR &= ~(1 << WDRF);
@@ -78,19 +124,19 @@ int main(void)
   {
     // blink
     if(i++ == 10000)
-      PORTB |= (1 << PB4);  //on
+      PORTLED |= (1 << LED);  //on
     else if(i == 20000)
     {
-      PORTB &= ~(1 << PB4); //off
+      PORTLED &= ~(1 << LED); //off
       i = 0;
     }
 
     _delay_us(100);
 
 #ifdef DEBUG
-    if ((PINE & (1 << PE6)))
+    if ((PORTBUTTON & (1 << BUTTON)))
 #else
-    if (!(PINE & (1 << PE6)))
+    if (!(PORTBUTTON & (1 << BUTTON)))
 #endif
     {
       aes256_ctx_t ctx;

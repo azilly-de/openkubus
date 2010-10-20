@@ -61,6 +61,9 @@
 
 # MCU name
 MCU = atmega16u4
+#MCU = at90usb162
+#MCU = at90usb646
+#MCU = at90usb1287
 
 
 # Target board (see library BoardTypes.h documentation, USER or blank for projects not requiring
